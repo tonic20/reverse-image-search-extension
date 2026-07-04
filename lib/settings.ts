@@ -1,3 +1,4 @@
+import { browser } from 'wxt/browser';
 import { DEFAULT_ENGINE_ORDER } from './engines';
 
 export interface Settings {
@@ -13,10 +14,13 @@ const DEFAULTS: Settings = {
 };
 
 export async function getSettings(): Promise<Settings> {
-  const stored = await chrome.storage.sync.get(DEFAULTS);
-  return { ...DEFAULTS, ...stored } as Settings;
+  const stored = (await browser.storage.sync.get([
+    'engineOrder',
+    'openInBackground',
+  ])) as Partial<Settings>;
+  return { ...DEFAULTS, ...stored };
 }
 
 export async function setSettings(patch: Partial<Settings>): Promise<void> {
-  await chrome.storage.sync.set(patch);
+  await browser.storage.sync.set(patch as Record<string, unknown>);
 }

@@ -1,3 +1,4 @@
+import { browser } from 'wxt/browser';
 import { ENGINES, engineList } from '../lib/engines';
 import { getSettings } from '../lib/settings';
 
@@ -6,28 +7,30 @@ const ALL_ID = 'ris-all';
 
 // WXT auto-imports `defineBackground`.
 export default defineBackground(() => {
-  chrome.runtime.onInstalled.addListener(rebuildMenus);
-  chrome.runtime.onStartup.addListener(rebuildMenus);
-  chrome.storage.onChanged.addListener((_changes, area) => {
-    if (area === 'sync') rebuildMenus();
+  browser.runtime.onInstalled.addListener(rebuildMenus);
+  browser.runtime.onStartup.addListener(rebuildMenus);
+  browser.storage.onChanged.addListener((_changes, area) => {
+    if (area === 'sync') void rebuildMenus();
   });
 
-  chrome.contextMenus.onClicked.addListener(handleClick);
+  browser.contextMenus.onClicked.addListener((info) => {
+    if (info.srcUrl) void handleClick(String(info.menuItemId), info.srcUrl);
+  });
 });
 
 async function rebuildMenus() {
-  await chrome.contextMenus.removeAll();
+  await browser.contextMenus.removeAll();
   const { engineOrder } = await getSettings();
   const engines = engineList(engineOrder);
 
-  chrome.contextMenus.create({
+  browser.contextMenus.create({
     id: PARENT_ID,
     title: 'Reverse image search',
     contexts: ['image'],
   });
 
   for (const e of engines) {
-    chrome.contextMenus.create({
+    browser.contextMenus.create({
       id: e.id,
       parentId: PARENT_ID,
       title: e.note ? `${e.name} — ${e.note}` : e.name,
@@ -35,8 +38,13 @@ async function rebuildMenus() {
     });
   }
 
-  chrome.contextMenus.create({ id: 'sep', parentId: PARENT_ID, type: 'separator', contexts: ['image'] });
-  chrome.contextMenus.create({
+  browser.contextMenus.create({
+    id: 'sep',
+    parentId: PARENT_ID,
+    type: 'separator',
+    contexts: ['image'],
+  });
+  browser.contextMenus.create({
     id: ALL_ID,
     parentId: PARENT_ID,
     title: 'All engines',
@@ -44,24 +52,20 @@ async function rebuildMenus() {
   });
 }
 
-async function handleClick(info: chrome.contextMenus.OnClickData) {
-  const src = info.srcUrl;
-  if (!src) return;
-
+async function handleClick(menuItemId: string, srcUrl: string) {
   const { engineOrder, openInBackground } = await getSettings();
 
-  // NOTE (Phase 0.3): if `src` is a data:/blob: URL or the page blocks fetching
-  // it (Instagram/Pinterest), the redirect engines can't load it. That path
-  // uploads the bytes to S3 first to get a public URL. Phase 0.1 handles the
-  // common case where images already have a public URL.
-  const ids =
-    info.menuItemId === ALL_ID ? engineOrder : [String(info.menuItemId)];
+  // NOTE (Phase 0.3): if `srcUrl` is a data:/blob: URL or the page blocks
+  // fetching it (Instagram/Pinterest), the redirect engines can't load it.
+  // That path uploads the bytes to S3 first to get a public URL. Phase 0.1
+  // handles the common case where images already have a public URL.
+  const ids = menuItemId === ALL_ID ? engineOrder : [menuItemId];
 
   ids.forEach((id, i) => {
     const engine = ENGINES[id];
     if (!engine) return;
-    chrome.tabs.create({
-      url: engine.byUrl(src),
+    void browser.tabs.create({
+      url: engine.byUrl(srcUrl),
       // First tab focused; extras open in background if the user prefers.
       active: i === 0 ? true : !openInBackground,
     });
