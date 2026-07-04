@@ -1,0 +1,24 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Reverse Image Search</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <h1>Reverse Image Search</h1>
+    <p class="hint">Right-click any image → <b>Reverse image search</b>.</p>
+
+    <h2>Engines <span class="sub">(drag order coming soon)</span></h2>
+    <ul id="engines"></ul>
+
+    <label class="row">
+      <input type="checkbox" id="openInBackground" />
+      Open “All engines” tabs in the background
+    </label>
+
+    <p class="footer">Phase 0.1 · redirect only · no data leaves your browser</p>
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>

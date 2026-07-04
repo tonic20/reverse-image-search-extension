@@ -1,0 +1,4 @@
+{
+  // WXT generates .wxt/tsconfig.json after `wxt prepare` (runs on postinstall).
+  "extends": "./.wxt/tsconfig.json"
+}
