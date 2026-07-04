@@ -1,5 +1,7 @@
 import { browser } from 'wxt/browser';
 import { ENGINES } from './engines';
+import { getSettings } from './settings';
+import { API_BASE } from './config';
 
 /** Phase 0.1 path: image already has a public URL → open each engine's results. */
 export function openUrlSearches(
@@ -18,30 +20,44 @@ export function openUrlSearches(
 }
 
 /**
- * Phase 0.2 path: a raw image (pasted or captured) that has no public URL.
- * Google Lens accepts a direct multipart upload and 303-redirects to its
- * results page, so we can search without a backend.
+ * Phase 0.3 path: a raw image (pasted or captured) with no public URL.
  *
- * Phase 0.3 (SPEC §7) will instead upload the bytes to S3 to mint a public
- * URL, then run ALL engines via openUrlSearches — the two paths converge.
+ * We ask our backend for presigned S3 URLs (the bucket stays fully private),
+ * PUT the bytes straight to S3, then run every enabled engine on the temporary
+ * presigned GET URL — so captured/pasted/Instagram images search across ALL
+ * engines, not just Lens. See SPEC §7.
  */
 export async function searchImageByUpload(dataUrl: string): Promise<void> {
   try {
     const blob = await (await fetch(dataUrl)).blob();
-    const form = new FormData();
-    form.append('encoded_image', blob, 'image.png');
+    const contentType = blob.type || 'image/png';
 
-    const res = await fetch('https://lens.google.com/v3/upload', {
+    // 1) Presign (bucket is private; nothing is ever made public).
+    const presignRes = await fetch(`${API_BASE}/v1/uploads`, {
       method: 'POST',
-      body: form,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content_type: contentType }),
     });
+    if (!presignRes.ok) throw new Error(`presign failed: ${presignRes.status}`);
+    const { put_url, get_url } = (await presignRes.json()) as {
+      put_url: string;
+      get_url: string;
+    };
 
-    // Following redirects yields the Lens results page URL.
-    const url = res.url && res.url.includes('lens.google.com') ? res.url : 'https://lens.google.com/';
-    await browser.tabs.create({ url });
+    // 2) Upload the bytes straight to S3 (they never touch our server).
+    const putRes = await fetch(put_url, {
+      method: 'PUT',
+      headers: { 'Content-Type': contentType },
+      body: blob,
+    });
+    if (!putRes.ok) throw new Error(`s3 upload failed: ${putRes.status}`);
+
+    // 3) Run every enabled engine on the short-lived presigned URL.
+    const { engineOrder, openInBackground } = await getSettings();
+    openUrlSearches(get_url, engineOrder, openInBackground);
   } catch (err) {
     console.error('[RIS] upload search failed:', err);
-    // Fallback: open Lens so the user can drop the image manually.
+    // Fallback so the user isn't stranded.
     await browser.tabs.create({ url: 'https://lens.google.com/' });
   }
 }
