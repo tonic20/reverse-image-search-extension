@@ -1,12 +1,13 @@
+import { browser } from 'wxt/browser';
 import { ENGINES, DEFAULT_ENGINE_ORDER } from '../../lib/engines';
 import { getSettings, setSettings } from '../../lib/settings';
+import { MSG } from '../../lib/messages';
 
-async function render() {
+async function renderEngines() {
   const settings = await getSettings();
   const list = document.getElementById('engines')!;
   list.innerHTML = '';
 
-  // Show all known engines; checkbox = enabled/in engineOrder.
   for (const id of Object.keys(ENGINES)) {
     const e = ENGINES[id];
     const enabled = settings.engineOrder.includes(id);
@@ -18,10 +19,9 @@ async function render() {
     cb.addEventListener('change', async () => {
       const order = new Set(settings.engineOrder);
       cb.checked ? order.add(id) : order.delete(id);
-      // Preserve a stable order based on the default ordering.
       const next = DEFAULT_ENGINE_ORDER.filter((x) => order.has(x));
       await setSettings({ engineOrder: next });
-      render();
+      renderEngines();
     });
 
     const label = document.createElement('span');
@@ -36,4 +36,46 @@ async function render() {
   bg.onchange = () => setSettings({ openInBackground: bg.checked });
 }
 
-render();
+function status(text: string) {
+  const el = document.getElementById('status')!;
+  el.textContent = text;
+  el.hidden = false;
+}
+
+async function startCapture() {
+  const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
+  if (!tab?.id) return;
+  try {
+    await browser.tabs.sendMessage(tab.id, { type: MSG.START_CAPTURE });
+    window.close();
+  } catch {
+    // The content script isn't present on this tab (e.g. a page open before
+    // install, or a restricted page). Ask the user to reload.
+    status('Reload this page, then try Capture region again.');
+  }
+}
+
+async function onPaste(e: ClipboardEvent) {
+  const item = Array.from(e.clipboardData?.items ?? []).find((i) => i.type.startsWith('image/'));
+  const file = item?.getAsFile();
+  if (!file) {
+    status('No image found in the clipboard.');
+    return;
+  }
+  const dataUrl = await fileToDataUrl(file);
+  await browser.runtime.sendMessage({ type: MSG.SEARCH_IMAGE, dataUrl });
+  window.close();
+}
+
+function fileToDataUrl(file: Blob): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(r.result as string);
+    r.onerror = () => reject(r.error);
+    r.readAsDataURL(file);
+  });
+}
+
+document.getElementById('capture')!.addEventListener('click', startCapture);
+document.addEventListener('paste', onPaste);
+renderEngines();

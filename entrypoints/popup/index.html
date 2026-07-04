@@ -10,7 +10,13 @@
     <h1>Reverse Image Search</h1>
     <p class="hint">Right-click any image → <b>Reverse image search</b>.</p>
 
-    <h2>Engines <span class="sub">(drag order coming soon)</span></h2>
+    <div class="actions">
+      <button id="capture" class="btn">◱ Capture region</button>
+      <div id="paste" class="paste" tabindex="0">Paste an image — ⌘/Ctrl + V</div>
+    </div>
+    <p class="note" id="status" hidden></p>
+
+    <h2>Engines <span class="sub">(toggle to enable)</span></h2>
     <ul id="engines"></ul>
 
     <label class="row">
@@ -18,7 +24,7 @@
       Open “All engines” tabs in the background
     </label>
 
-    <p class="footer">Phase 0.1 · redirect only · no data leaves your browser</p>
+    <p class="footer">Captured / pasted images search via Google Lens for now · more engines coming</p>
     <script type="module" src="./main.ts"></script>
   </body>
 </html>
