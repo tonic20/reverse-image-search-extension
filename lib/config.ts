@@ -1,6 +1,8 @@
 // Backend API base URL.
-// Dev points at the local Rails app on :3060; prod at the public site
-// reverseimage.app (registered; Rails app not yet deployed there).
-export const API_BASE = import.meta.env.DEV
-  ? 'http://localhost:3060'
-  : 'https://reverseimage.app';
+// Override with VITE_API_BASE to point the dev build at any backend, e.g.
+// verify the dev extension against production:
+//   VITE_API_BASE=https://reverseimage.app npm run dev
+// Otherwise: dev → local Rails on :3060, prod build → https://reverseimage.app (live).
+export const API_BASE =
+  (import.meta.env.VITE_API_BASE as string | undefined) ||
+  (import.meta.env.DEV ? 'http://localhost:3060' : 'https://reverseimage.app');
