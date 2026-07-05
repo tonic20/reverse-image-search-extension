@@ -45,6 +45,13 @@ export const ENGINES: Record<string, Engine> = {
 /** Default enabled engines, in display/open order. User can reorder/toggle. */
 export const DEFAULT_ENGINE_ORDER: string[] = ['google', 'yandex', 'bing', 'tineye'];
 
+/**
+ * Face-search order (Phase 0.4). Yandex first — its similarity model is the
+ * strongest for people — then Google Lens + Bing. TinEye is excluded: it does
+ * exact-duplicate matching, which is useless for finding a *person*.
+ */
+export const FACE_ENGINE_ORDER: string[] = ['yandex', 'google', 'bing'];
+
 export function engineList(order: string[] = DEFAULT_ENGINE_ORDER): Engine[] {
   return order.map((id) => ENGINES[id]).filter(Boolean);
 }

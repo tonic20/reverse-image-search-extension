@@ -6,9 +6,11 @@ export default defineContentScript({
   matches: ['<all_urls>'],
   main() {
     browser.runtime.onMessage.addListener((message) => {
-      const msg = message as { type?: string; srcUrl?: string };
-      if (msg?.type === MSG.START_CAPTURE) startCapture();
+      const msg = message as { type?: string; srcUrl?: string; dataUrl?: string };
+      if (msg?.type === MSG.START_CAPTURE) startCapture(false);
+      else if (msg?.type === MSG.START_FACE_CAPTURE) startCapture(true);
       else if (msg?.type === MSG.GRAB_IMAGE && msg.srcUrl) void grabImage(msg.srcUrl);
+      else if (msg?.type === MSG.START_FACE_CROP) void startFaceCrop(msg.dataUrl, msg.srcUrl);
     });
   },
 });
@@ -70,7 +72,7 @@ function blobToDataUrl(blob: Blob): Promise<string> {
   });
 }
 
-function startCapture() {
+function startCapture(faceMode = false) {
   if (active) return;
   active = true;
 
@@ -94,7 +96,9 @@ function startCapture() {
   overlay.appendChild(box);
 
   const hint = document.createElement('div');
-  hint.textContent = 'Drag to select an area · Esc to cancel';
+  hint.textContent = faceMode
+    ? 'Drag a box around the face · Esc to cancel'
+    : 'Drag to select an area · Esc to cancel';
   Object.assign(hint.style, {
     position: 'fixed',
     top: '12px',
@@ -148,7 +152,7 @@ function startCapture() {
       active = false;
       return;
     }
-    void finish(r.x, r.y, r.w, r.h);
+    void finish(r.x, r.y, r.w, r.h, faceMode);
   };
   const onKey = (e: KeyboardEvent) => {
     if (e.key === 'Escape') {
@@ -171,7 +175,7 @@ function startCapture() {
   window.addEventListener('keydown', onKey);
 }
 
-async function finish(x: number, y: number, w: number, h: number) {
+async function finish(x: number, y: number, w: number, h: number, faceMode = false) {
   try {
     // Overlay is already removed; wait two frames so the screenshot is clean.
     await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(() => r(null))));
@@ -182,7 +186,10 @@ async function finish(x: number, y: number, w: number, h: number) {
 
     if (!resp?.dataUrl) return;
     const cropped = await cropDataUrl(resp.dataUrl, x, y, w, h);
-    await browser.runtime.sendMessage({ type: MSG.SEARCH_IMAGE, dataUrl: cropped });
+    await browser.runtime.sendMessage({
+      type: faceMode ? MSG.SEARCH_FACE : MSG.SEARCH_IMAGE,
+      dataUrl: cropped,
+    });
   } catch (err) {
     console.error('[RIS] region capture failed:', err);
   } finally {
@@ -212,4 +219,280 @@ function cropDataUrl(dataUrl: string, x: number, y: number, w: number, h: number
     img.onerror = () => reject(new Error('screenshot decode failed'));
     img.src = dataUrl;
   });
+}
+
+// ── Phase 0.4: "Search this face" — crop assist + ethics gate ──────────────
+
+const ETHICS_LINE = 'For verifying people, sources & authenticity — not stalking or harassment. Follow local law.';
+
+/**
+ * Entry from the context menu. `dataUrl` is clean bytes grabbed by the worker;
+ * if it's absent (blob:/cookie-gated) we grab in-page. Then: first-run ethics
+ * gate → crop overlay → face-order upload search.
+ */
+async function startFaceCrop(dataUrl?: string, srcUrl?: string) {
+  if (active) return;
+  try {
+    let clean = dataUrl;
+    if (!clean && srcUrl) {
+      try {
+        clean = await fetchAsDataUrl(srcUrl);
+      } catch {
+        try {
+          clean = elementToDataUrl(srcUrl);
+        } catch {
+          clean = undefined;
+        }
+      }
+    }
+    if (!clean) {
+      // Couldn't get croppable bytes — degrade to a whole-image URL face search.
+      if (srcUrl) await browser.runtime.sendMessage({ type: MSG.SEARCH_FACE_URL, srcUrl });
+      return;
+    }
+    if (!(await ensureFaceEthicsAck())) return; // user declined the notice
+    openCropOverlay(clean);
+  } catch (err) {
+    console.error('[RIS] face crop failed:', err);
+    active = false;
+  }
+}
+
+async function ensureFaceEthicsAck(): Promise<boolean> {
+  const { faceEthicsAckd } = (await browser.storage.local.get('faceEthicsAckd')) as {
+    faceEthicsAckd?: boolean;
+  };
+  if (faceEthicsAckd) return true;
+  const ok = await showEthicsGate();
+  if (ok) await browser.storage.local.set({ faceEthicsAckd: true });
+  return ok;
+}
+
+/** First-run responsible-use notice; resolves true if the user acknowledges. */
+function showEthicsGate(): Promise<boolean> {
+  return new Promise((resolve) => {
+    const overlay = fullscreenOverlay('rgba(0,0,0,0.8)');
+    const card = document.createElement('div');
+    Object.assign(card.style, {
+      maxWidth: '440px',
+      background: '#fff',
+      color: '#111827',
+      borderRadius: '14px',
+      padding: '24px',
+      font: '14px/1.55 system-ui, sans-serif',
+      boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
+    });
+    card.innerHTML =
+      '<h2 style="margin:0 0 10px;font-size:18px">Search this face — responsible use</h2>' +
+      '<p style="margin:0 0 10px">Face search is powerful. Use it to <b>reunite sources, ' +
+      'verify authenticity, and spot fakes or impersonation</b>.</p>' +
+      '<p style="margin:0 0 16px">Do <b>not</b> use it to stalk, harass, or identify people ' +
+      'without a legitimate reason. You are responsible for complying with your local laws.</p>';
+
+    const row = document.createElement('div');
+    Object.assign(row.style, { display: 'flex', gap: '8px', justifyContent: 'flex-end' });
+    const cancel = gateButton('Cancel', false);
+    const ok = gateButton('I understand', true);
+    const done = (v: boolean) => {
+      overlay.remove();
+      window.removeEventListener('keydown', onKey);
+      resolve(v);
+    };
+    cancel.onclick = () => done(false);
+    ok.onclick = () => done(true);
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') done(false);
+    };
+    window.addEventListener('keydown', onKey);
+
+    row.append(cancel, ok);
+    card.append(row);
+    overlay.append(card);
+    document.documentElement.append(overlay);
+  });
+}
+
+/** The crop-assist modal: show the image, drag a box around the face, confirm. */
+function openCropOverlay(dataUrl: string) {
+  active = true;
+
+  const overlay = fullscreenOverlay('rgba(0,0,0,0.82)');
+  Object.assign(overlay.style, {
+    flexDirection: 'column',
+    gap: '12px',
+    padding: '20px',
+    boxSizing: 'border-box',
+  });
+
+  const top = document.createElement('div');
+  top.textContent = `Drag a box around the face, then Search. ${ETHICS_LINE}`;
+  Object.assign(top.style, {
+    color: '#e5e7eb',
+    font: '13px/1.4 system-ui, sans-serif',
+    textAlign: 'center',
+    maxWidth: '680px',
+  });
+
+  const wrap = document.createElement('div');
+  Object.assign(wrap.style, { position: 'relative', display: 'inline-block', lineHeight: '0' });
+
+  const img = document.createElement('img');
+  img.src = dataUrl;
+  img.draggable = false;
+  Object.assign(img.style, {
+    maxWidth: 'min(90vw, 900px)',
+    maxHeight: '72vh',
+    display: 'block',
+    userSelect: 'none',
+  });
+
+  const box = document.createElement('div');
+  Object.assign(box.style, {
+    position: 'absolute',
+    border: '2px solid #4f46e5',
+    boxShadow: '0 0 0 9999px rgba(0,0,0,0.45)',
+    display: 'none',
+    pointerEvents: 'none',
+  });
+
+  wrap.append(img, box);
+
+  const bar = document.createElement('div');
+  Object.assign(bar.style, { display: 'flex', gap: '8px' });
+  const cancelBtn = gateButton('Cancel', false);
+  const searchBtn = gateButton('Search this face', true);
+  bar.append(cancelBtn, searchBtn);
+
+  overlay.append(top, wrap, bar);
+  document.documentElement.append(overlay);
+
+  // Drag-to-draw a crop rectangle, in image-relative CSS pixels.
+  let sel: { left: number; top: number; w: number; h: number } | null = null;
+  let dragging = false;
+  let sx = 0;
+  let sy = 0;
+
+  const rel = (e: MouseEvent) => {
+    const r = img.getBoundingClientRect();
+    return {
+      x: Math.min(Math.max(e.clientX - r.left, 0), r.width),
+      y: Math.min(Math.max(e.clientY - r.top, 0), r.height),
+    };
+  };
+  const onDown = (e: MouseEvent) => {
+    if (e.button !== 0) return;
+    e.preventDefault();
+    dragging = true;
+    const p = rel(e);
+    sx = p.x;
+    sy = p.y;
+    sel = { left: sx, top: sy, w: 0, h: 0 };
+    drawSel();
+  };
+  const onMove = (e: MouseEvent) => {
+    if (!dragging) return;
+    const p = rel(e);
+    sel = {
+      left: Math.min(sx, p.x),
+      top: Math.min(sy, p.y),
+      w: Math.abs(p.x - sx),
+      h: Math.abs(p.y - sy),
+    };
+    drawSel();
+  };
+  const onUp = () => {
+    dragging = false;
+    if (sel && (sel.w < 8 || sel.h < 8)) sel = null;
+    drawSel();
+  };
+  const drawSel = () => {
+    if (!sel || sel.w < 1 || sel.h < 1) {
+      box.style.display = 'none';
+      return;
+    }
+    box.style.display = 'block';
+    box.style.left = `${sel.left}px`;
+    box.style.top = `${sel.top}px`;
+    box.style.width = `${sel.w}px`;
+    box.style.height = `${sel.h}px`;
+  };
+
+  const cleanup = () => {
+    img.removeEventListener('mousedown', onDown);
+    window.removeEventListener('mousemove', onMove);
+    window.removeEventListener('mouseup', onUp);
+    window.removeEventListener('keydown', onKey);
+    overlay.remove();
+    active = false;
+  };
+  const confirm = async () => {
+    try {
+      const out = sel ? cropImageRegion(img, sel) : dataUrl;
+      cleanup();
+      await browser.runtime.sendMessage({ type: MSG.SEARCH_FACE, dataUrl: out });
+    } catch (err) {
+      console.error('[RIS] face crop confirm failed:', err);
+      cleanup();
+    }
+  };
+  const onKey = (e: KeyboardEvent) => {
+    if (e.key === 'Escape') cleanup();
+    else if (e.key === 'Enter') void confirm();
+  };
+
+  img.addEventListener('mousedown', onDown);
+  window.addEventListener('mousemove', onMove);
+  window.addEventListener('mouseup', onUp);
+  window.addEventListener('keydown', onKey);
+  cancelBtn.onclick = cleanup;
+  searchBtn.onclick = () => void confirm();
+}
+
+/** Crop a display-relative rectangle out of a loaded <img> at its natural res. */
+function cropImageRegion(
+  img: HTMLImageElement,
+  sel: { left: number; top: number; w: number; h: number },
+): string {
+  const scaleX = img.naturalWidth / img.clientWidth;
+  const scaleY = img.naturalHeight / img.clientHeight;
+  const sx = Math.round(sel.left * scaleX);
+  const sy = Math.round(sel.top * scaleY);
+  const sw = Math.max(1, Math.round(sel.w * scaleX));
+  const sh = Math.max(1, Math.round(sel.h * scaleY));
+  const canvas = document.createElement('canvas');
+  canvas.width = sw;
+  canvas.height = sh;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) throw new Error('no 2d context');
+  ctx.drawImage(img, sx, sy, sw, sh, 0, 0, sw, sh);
+  return canvas.toDataURL('image/png');
+}
+
+function fullscreenOverlay(bg: string): HTMLDivElement {
+  const el = document.createElement('div');
+  Object.assign(el.style, {
+    position: 'fixed',
+    inset: '0',
+    zIndex: '2147483647',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    background: bg,
+  });
+  return el;
+}
+
+function gateButton(label: string, primary: boolean): HTMLButtonElement {
+  const b = document.createElement('button');
+  b.textContent = label;
+  Object.assign(b.style, {
+    font: '14px system-ui, sans-serif',
+    padding: '9px 16px',
+    borderRadius: '9px',
+    border: primary ? 'none' : '1px solid #d1d5db',
+    background: primary ? '#4f46e5' : '#fff',
+    color: primary ? '#fff' : '#374151',
+    cursor: 'pointer',
+  });
+  return b;
 }

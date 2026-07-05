@@ -42,18 +42,21 @@ function status(text: string) {
   el.hidden = false;
 }
 
-async function startCapture() {
+async function sendToActiveTab(type: string, retryLabel: string) {
   const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
   if (!tab?.id) return;
   try {
-    await browser.tabs.sendMessage(tab.id, { type: MSG.START_CAPTURE });
+    await browser.tabs.sendMessage(tab.id, { type });
     window.close();
   } catch {
     // The content script isn't present on this tab (e.g. a page open before
     // install, or a restricted page). Ask the user to reload.
-    status('Reload this page, then try Capture region again.');
+    status(`Reload this page, then try ${retryLabel} again.`);
   }
 }
+
+const startCapture = () => sendToActiveTab(MSG.START_CAPTURE, 'Capture region');
+const startFaceCapture = () => sendToActiveTab(MSG.START_FACE_CAPTURE, 'Search this face');
 
 async function onPaste(e: ClipboardEvent) {
   const item = Array.from(e.clipboardData?.items ?? []).find((i) => i.type.startsWith('image/'));
@@ -77,5 +80,6 @@ function fileToDataUrl(file: Blob): Promise<string> {
 }
 
 document.getElementById('capture')!.addEventListener('click', startCapture);
+document.getElementById('face')!.addEventListener('click', startFaceCapture);
 document.addEventListener('paste', onPaste);
 renderEngines();

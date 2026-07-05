@@ -28,7 +28,7 @@ export function openUrlSearches(
  * presigned GET URL — so captured/pasted/Instagram images search across ALL
  * engines, not just Lens. See SPEC §7.
  */
-export async function searchImageBlob(blob: Blob): Promise<void> {
+export async function searchImageBlob(blob: Blob, engineOverride?: string[]): Promise<void> {
   try {
     if (blob.size === 0) throw new Error('empty image blob');
     const contentType = blob.type || 'image/png';
@@ -61,9 +61,9 @@ export async function searchImageBlob(blob: Blob): Promise<void> {
     const putRes = await fetch(upload.url, { method: 'POST', body: form });
     if (!putRes.ok) throw new Error(`s3 upload failed: ${putRes.status}`);
 
-    // 3) Run every enabled engine on the short-lived presigned GET URL.
+    // 3) Run the chosen engines on the short-lived presigned GET URL.
     const { engineOrder, openInBackground } = await getSettings();
-    openUrlSearches(get_url, engineOrder, openInBackground);
+    openUrlSearches(get_url, engineOverride ?? engineOrder, openInBackground);
   } catch (err) {
     console.error('[RIS] upload search failed:', err);
     // Fallback so the user isn't stranded.
@@ -72,9 +72,24 @@ export async function searchImageBlob(blob: Blob): Promise<void> {
 }
 
 /** Convenience wrapper: search a raw image given as a data: URL. */
-export async function searchImageByUpload(dataUrl: string): Promise<void> {
+export async function searchImageByUpload(dataUrl: string, engineOverride?: string[]): Promise<void> {
   const blob = await (await fetch(dataUrl)).blob();
-  return searchImageBlob(blob);
+  return searchImageBlob(blob, engineOverride);
+}
+
+/**
+ * Service-worker-safe blob → data URL (no FileReader in the SW).
+ * Used by the face flow to hand grabbed image bytes to the content script's
+ * crop overlay.
+ */
+export async function blobToDataUrlSW(blob: Blob): Promise<string> {
+  const bytes = new Uint8Array(await blob.arrayBuffer());
+  let bin = '';
+  const CHUNK = 0x8000; // avoid arg-count limits in String.fromCharCode
+  for (let i = 0; i < bytes.length; i += CHUNK) {
+    bin += String.fromCharCode(...bytes.subarray(i, i + CHUNK));
+  }
+  return `data:${blob.type || 'image/png'};base64,${btoa(bin)}`;
 }
 
 /**
