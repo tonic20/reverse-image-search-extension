@@ -33,27 +33,35 @@ export async function searchImageBlob(blob: Blob): Promise<void> {
     if (blob.size === 0) throw new Error('empty image blob');
     const contentType = blob.type || 'image/png';
 
-    // 1) Presign (bucket is private; nothing is ever made public).
+    // 1) Presign (bucket is private; nothing is ever made public). The backend
+    //    returns a presigned POST with an S3-enforced size cap.
     const presignRes = await fetch(`${API_BASE}/v1/uploads`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ content_type: contentType }),
     });
     if (!presignRes.ok) throw new Error(`presign failed: ${presignRes.status}`);
-    const { put_url, get_url } = (await presignRes.json()) as {
-      put_url: string;
+    const { upload, get_url, max_bytes } = (await presignRes.json()) as {
+      upload: { url: string; fields: Record<string, string> };
       get_url: string;
+      max_bytes?: number;
     };
 
-    // 2) Upload the bytes straight to S3 (they never touch our server).
-    const putRes = await fetch(put_url, {
-      method: 'PUT',
-      headers: { 'Content-Type': contentType },
-      body: blob,
-    });
+    // Friendly early reject (S3 would 400 EntityTooLarge anyway).
+    if (max_bytes && blob.size > max_bytes) {
+      throw new Error(`image too large: ${blob.size} > ${max_bytes}`);
+    }
+
+    // 2) POST the bytes straight to S3 (they never touch our server). The `file`
+    //    field MUST come last, after all signed policy fields. This runs in the
+    //    background worker, whose host permissions bypass page CORS.
+    const form = new FormData();
+    for (const [k, v] of Object.entries(upload.fields)) form.append(k, v);
+    form.append('file', blob, 'image');
+    const putRes = await fetch(upload.url, { method: 'POST', body: form });
     if (!putRes.ok) throw new Error(`s3 upload failed: ${putRes.status}`);
 
-    // 3) Run every enabled engine on the short-lived presigned URL.
+    // 3) Run every enabled engine on the short-lived presigned GET URL.
     const { engineOrder, openInBackground } = await getSettings();
     openUrlSearches(get_url, engineOrder, openInBackground);
   } catch (err) {
