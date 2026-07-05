@@ -10,7 +10,6 @@ import {
   blobToDataUrlSW,
 } from '../lib/search';
 
-const PARENT_ID = 'ris-parent';
 const ALL_ID = 'ris-all';
 const UPLOAD_ID = 'ris-upload';
 const FACE_ID = 'ris-face';
@@ -70,41 +69,35 @@ async function rebuildMenus() {
   await browser.contextMenus.removeAll();
   const { engineOrder } = await getSettings();
 
-  // On an image: per-engine + "All engines".
-  browser.contextMenus.create({ id: PARENT_ID, title: 'Reverse image search', contexts: ['image'] });
+  // Flat menu: every action is a TOP-LEVEL item — no parent of our own. Chrome
+  // auto-collapses an extension's multiple top-level items into a single submenu
+  // named after the extension ("Reverse Image Search"), so this is exactly one
+  // level deep. (An explicit parent on top of that is what double-nested before.)
+
+  // Per-engine, on an image.
   for (const e of engineList(engineOrder)) {
-    browser.contextMenus.create({
-      id: e.id,
-      parentId: PARENT_ID,
-      title: e.note ? `${e.name} — ${e.note}` : e.name,
-      contexts: ['image'],
-    });
+    browser.contextMenus.create({ id: e.id, title: e.name, contexts: ['image'] });
   }
-  browser.contextMenus.create({ id: 'sep', parentId: PARENT_ID, type: 'separator', contexts: ['image'] });
-  browser.contextMenus.create({ id: ALL_ID, parentId: PARENT_ID, title: 'All engines', contexts: ['image'] });
+  browser.contextMenus.create({ id: 'sep', type: 'separator', contexts: ['image'] });
+
+  browser.contextMenus.create({ id: ALL_ID, title: 'All engines', contexts: ['image'] });
   // Byte-grab path for images the redirect method can't reach (Instagram,
   // Pinterest, hotlink-protected CDNs, blob:/data:). See SPEC §7 / Phase 0.3b.
   browser.contextMenus.create({
     id: UPLOAD_ID,
-    parentId: PARENT_ID,
-    title: 'All engines (upload — works on Instagram/Pinterest)',
+    title: 'All engines (upload — Instagram/Pinterest)',
     contexts: ['image'],
   });
 
+  browser.contextMenus.create({ id: 'sep2', type: 'separator', contexts: ['image'] });
   // Face-search flow (Phase 0.4): crop-assist → Yandex-first engine order.
-  browser.contextMenus.create({ id: 'sep2', parentId: PARENT_ID, type: 'separator', contexts: ['image'] });
-  browser.contextMenus.create({
-    id: FACE_ID,
-    parentId: PARENT_ID,
-    title: '🔍 Search this face…',
-    contexts: ['image'],
-  });
+  browser.contextMenus.create({ id: FACE_ID, title: '🔍 Search this face…', contexts: ['image'] });
 
   // Anywhere on the page: capture a region to search (for images with no usable
   // URL, or to search just part of the page).
   browser.contextMenus.create({
     id: CAPTURE_ID,
-    title: 'Reverse image search: capture region',
+    title: 'Capture region to search',
     contexts: ['page', 'image', 'selection'],
   });
 }
