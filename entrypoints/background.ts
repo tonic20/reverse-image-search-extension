@@ -2,10 +2,16 @@ import { browser } from 'wxt/browser';
 import { engineList } from '../lib/engines';
 import { getSettings } from '../lib/settings';
 import { MSG } from '../lib/messages';
-import { openUrlSearches, searchImageByUpload } from '../lib/search';
+import {
+  openUrlSearches,
+  searchImageByUpload,
+  searchImageBlob,
+  grabImageBlobFromBackground,
+} from '../lib/search';
 
 const PARENT_ID = 'ris-parent';
 const ALL_ID = 'ris-all';
+const UPLOAD_ID = 'ris-upload';
 const CAPTURE_ID = 'ris-capture';
 
 // WXT auto-imports `defineBackground`.
@@ -61,6 +67,14 @@ async function rebuildMenus() {
   }
   browser.contextMenus.create({ id: 'sep', parentId: PARENT_ID, type: 'separator', contexts: ['image'] });
   browser.contextMenus.create({ id: ALL_ID, parentId: PARENT_ID, title: 'All engines', contexts: ['image'] });
+  // Byte-grab path for images the redirect method can't reach (Instagram,
+  // Pinterest, hotlink-protected CDNs, blob:/data:). See SPEC §7 / Phase 0.3b.
+  browser.contextMenus.create({
+    id: UPLOAD_ID,
+    parentId: PARENT_ID,
+    title: 'All engines (upload — works on Instagram/Pinterest)',
+    contexts: ['image'],
+  });
 
   // Anywhere on the page: capture a region to search (for images with no usable
   // URL, or to search just part of the page).
@@ -77,8 +91,50 @@ async function handleMenuClick(menuItemId: string, srcUrl: string | undefined, t
     return;
   }
 
+  if (menuItemId === UPLOAD_ID) {
+    if (srcUrl) await grabAndSearch(srcUrl, tabId);
+    return;
+  }
+
   if (!srcUrl) return;
   const { engineOrder, openInBackground } = await getSettings();
   const ids = menuItemId === ALL_ID ? engineOrder : [menuItemId];
   openUrlSearches(srcUrl, ids, openInBackground);
+}
+
+/**
+ * Phase 0.3b — grab an image's bytes, then run the S3 upload-search path.
+ *
+ * Tiers, cheapest first:
+ *   1. `data:` URL — the bytes are already in hand.
+ *   2. Background fetch (host_permissions bypass page CORS) — reaches most CDN
+ *      images the redirect method can't hand to an engine.
+ *   3. Content-script grab — for `blob:`/`data:` (page-scoped) or images that
+ *      need the page's session cookies. The content script replies via
+ *      SEARCH_IMAGE, so nothing more to do here.
+ */
+async function grabAndSearch(srcUrl: string, tabId: number | undefined) {
+  if (srcUrl.startsWith('data:')) {
+    await searchImageByUpload(srcUrl);
+    return;
+  }
+
+  const blob = await grabImageBlobFromBackground(srcUrl);
+  if (blob) {
+    await searchImageBlob(blob);
+    return;
+  }
+
+  // Fall back to grabbing the bytes inside the page (blob:/cookie-gated/CORS).
+  if (tabId != null) {
+    try {
+      await browser.tabs.sendMessage(tabId, { type: MSG.GRAB_IMAGE, srcUrl });
+      return;
+    } catch (err) {
+      console.error('[RIS] content-script grab dispatch failed:', err);
+    }
+  }
+  // Last resort: let the engines try the raw URL themselves.
+  const { engineOrder, openInBackground } = await getSettings();
+  openUrlSearches(srcUrl, engineOrder, openInBackground);
 }

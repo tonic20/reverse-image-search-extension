@@ -20,16 +20,17 @@ export function openUrlSearches(
 }
 
 /**
- * Phase 0.3 path: a raw image (pasted or captured) with no public URL.
+ * Phase 0.3 path: a raw image (pasted, captured, or byte-grabbed) with no
+ * public URL.
  *
  * We ask our backend for presigned S3 URLs (the bucket stays fully private),
  * PUT the bytes straight to S3, then run every enabled engine on the temporary
  * presigned GET URL — so captured/pasted/Instagram images search across ALL
  * engines, not just Lens. See SPEC §7.
  */
-export async function searchImageByUpload(dataUrl: string): Promise<void> {
+export async function searchImageBlob(blob: Blob): Promise<void> {
   try {
-    const blob = await (await fetch(dataUrl)).blob();
+    if (blob.size === 0) throw new Error('empty image blob');
     const contentType = blob.type || 'image/png';
 
     // 1) Presign (bucket is private; nothing is ever made public).
@@ -59,5 +60,34 @@ export async function searchImageByUpload(dataUrl: string): Promise<void> {
     console.error('[RIS] upload search failed:', err);
     // Fallback so the user isn't stranded.
     await browser.tabs.create({ url: 'https://lens.google.com/' });
+  }
+}
+
+/** Convenience wrapper: search a raw image given as a data: URL. */
+export async function searchImageByUpload(dataUrl: string): Promise<void> {
+  const blob = await (await fetch(dataUrl)).blob();
+  return searchImageBlob(blob);
+}
+
+/**
+ * Phase 0.3b: grab an image's bytes from the background service worker.
+ *
+ * The worker holds `<all_urls>` host permissions, so its fetch is NOT subject
+ * to page CORS — it can read the bytes of most CDN images (Instagram/Pinterest
+ * public CDNs, hotlink-protected images) that the plain redirect method can't
+ * hand to a search engine. Returns null for the cases only the page can reach
+ * (`blob:`/`data:` are page-scoped; some images need the page's session
+ * cookies) so the caller can fall back to a content-script grab.
+ */
+export async function grabImageBlobFromBackground(srcUrl: string): Promise<Blob | null> {
+  if (srcUrl.startsWith('blob:') || srcUrl.startsWith('data:')) return null;
+  try {
+    const res = await fetch(srcUrl, { credentials: 'omit' });
+    if (!res.ok) return null;
+    const blob = await res.blob();
+    if (blob.size === 0 || !blob.type.startsWith('image/')) return null;
+    return blob;
+  } catch {
+    return null;
   }
 }

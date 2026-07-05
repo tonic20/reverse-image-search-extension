@@ -6,13 +6,69 @@ export default defineContentScript({
   matches: ['<all_urls>'],
   main() {
     browser.runtime.onMessage.addListener((message) => {
-      const msg = message as { type?: string };
+      const msg = message as { type?: string; srcUrl?: string };
       if (msg?.type === MSG.START_CAPTURE) startCapture();
+      else if (msg?.type === MSG.GRAB_IMAGE && msg.srcUrl) void grabImage(msg.srcUrl);
     });
   },
 });
 
 let active = false;
+
+/**
+ * Phase 0.3b — grab an image's bytes from inside the page.
+ *
+ * The background worker delegates here only when it couldn't fetch the bytes
+ * itself: `blob:` URLs are page-scoped, and some images need the page's session
+ * cookies / same-origin referer. An in-page fetch has both. If that fails
+ * (cross-origin without CORS), fall back to drawing the live <img> element to a
+ * canvas — which works for same-origin and CORS-enabled images.
+ */
+async function grabImage(srcUrl: string) {
+  try {
+    const dataUrl = await fetchAsDataUrl(srcUrl).catch(() => elementToDataUrl(srcUrl));
+    if (!dataUrl) {
+      console.warn('[RIS] could not grab image bytes in-page:', srcUrl);
+      return;
+    }
+    await browser.runtime.sendMessage({ type: MSG.SEARCH_IMAGE, dataUrl });
+  } catch (err) {
+    console.error('[RIS] in-page image grab failed:', err);
+  }
+}
+
+async function fetchAsDataUrl(srcUrl: string): Promise<string> {
+  const res = await fetch(srcUrl, { credentials: 'include' });
+  if (!res.ok) throw new Error(`fetch ${res.status}`);
+  const blob = await res.blob();
+  if (blob.size === 0 || !blob.type.startsWith('image/')) throw new Error('not an image');
+  return await blobToDataUrl(blob);
+}
+
+/** Fallback: find the matching <img> in the DOM and rasterize it. */
+function elementToDataUrl(srcUrl: string): string {
+  const img = Array.from(document.images).find(
+    (el) => el.currentSrc === srcUrl || el.src === srcUrl,
+  );
+  if (!img || !img.complete || img.naturalWidth === 0) throw new Error('image element not found');
+  const canvas = document.createElement('canvas');
+  canvas.width = img.naturalWidth;
+  canvas.height = img.naturalHeight;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) throw new Error('no 2d context');
+  ctx.drawImage(img, 0, 0);
+  // Throws SecurityError if the canvas is tainted (cross-origin, no CORS).
+  return canvas.toDataURL('image/png');
+}
+
+function blobToDataUrl(blob: Blob): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = () => reject(reader.error ?? new Error('read failed'));
+    reader.readAsDataURL(blob);
+  });
+}
 
 function startCapture() {
   if (active) return;
