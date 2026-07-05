@@ -24,10 +24,19 @@ async function renderEngines() {
       renderEngines();
     });
 
+    const icon = document.createElement('img');
+    icon.className = 'engine-ico';
+    icon.src = `/icons/engines/${id}.png`;
+    icon.alt = '';
+    icon.width = 16;
+    icon.height = 16;
+    // Hide gracefully if an engine has no bundled icon.
+    icon.onerror = () => (icon.style.display = 'none');
+
     const label = document.createElement('span');
     label.innerHTML = `<b>${e.name}</b> <span class="sub">${e.note ?? ''}</span>`;
 
-    li.append(cb, label);
+    li.append(cb, icon, label);
     list.append(li);
   }
 
