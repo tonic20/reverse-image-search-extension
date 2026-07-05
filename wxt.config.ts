@@ -6,15 +6,15 @@ export default defineConfig({
     name: 'Reverse Image Search',
     description:
       'Multi-engine reverse image search — right-click, paste, capture, or search where URLs fail.',
+    // Minimal set. captureVisibleTab is satisfied by <all_urls> + activeTab; opening
+    // result tabs, tabs.query for tab.id, and sendMessage need no permission. Removed
+    // (unused): 'tabs', 'scripting'. Never needed (impl avoided them): 'offscreen'
+    // (canvas crop runs in the content script), 'clipboardRead' (paste is read from
+    // the popup's `paste` event). WXT re-adds any dev-only perms during `wxt dev`.
     permissions: [
       'contextMenus',
-      'tabs',
-      'scripting',
       'activeTab',
       'storage',
-      // NOT needed (the Phase 0.2 plan expected them, the impl avoided them):
-      // 'offscreen'     — canvas crop runs in the content script, not an offscreen doc.
-      // 'clipboardRead' — paste is read from the popup's `paste` event (no permission).
     ],
     host_permissions: ['<all_urls>'],
   },
