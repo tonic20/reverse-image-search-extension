@@ -1,7 +1,7 @@
 // The "actual search": we don't match images ourselves — we hand the image URL
 // to an existing engine and open its results page. These redirect endpoints are
 // UNDOCUMENTED and can change; keep this list hot-updatable (see /v1/config).
-// Verified current: 2026-07.
+// Verified current: 2026-07 (Bing switched to the searchbyimage endpoint).
 
 export interface Engine {
   id: string;
@@ -25,8 +25,10 @@ export const ENGINES: Record<string, Engine> = {
     id: 'bing',
     name: 'Bing Visual',
     note: 'General + good OCR',
-    byUrl: (u) =>
-      `https://www.bing.com/images/search?view=detailv2&iss=sbi&q=imgurl:${enc(u)}`,
+    // The old `search?q=imgurl:…&iss=sbi` syntax now bounces to Bing's drop-image
+    // landing (FORM=SBIRDI). The `searchbyimage` endpoint with `cbir=sbi&imgurl=`
+    // still returns results. Verified 2026-07.
+    byUrl: (u) => `https://www.bing.com/images/searchbyimage?cbir=sbi&imgurl=${enc(u)}`,
   },
   yandex: {
     id: 'yandex',
