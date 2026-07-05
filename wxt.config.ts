@@ -12,8 +12,9 @@ export default defineConfig({
       'scripting',
       'activeTab',
       'storage',
-      // 'offscreen',      // enabled in Phase 0.2 (clipboard + canvas crop)
-      // 'clipboardRead',  // enabled in Phase 0.2
+      // NOT needed (the Phase 0.2 plan expected them, the impl avoided them):
+      // 'offscreen'     — canvas crop runs in the content script, not an offscreen doc.
+      // 'clipboardRead' — paste is read from the popup's `paste` event (no permission).
     ],
     host_permissions: ['<all_urls>'],
   },
