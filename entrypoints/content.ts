@@ -77,20 +77,23 @@ function startCapture(faceMode = false) {
   if (active) return;
   active = true;
 
+  ensureOverlayStyles();
   const overlay = document.createElement('div');
   Object.assign(overlay.style, {
     position: 'fixed',
     inset: '0',
     zIndex: '2147483647',
     cursor: 'crosshair',
-    background: 'rgba(0,0,0,0.25)',
+    background: 'rgba(15,23,42,0.28)',
   });
 
   const box = document.createElement('div');
   Object.assign(box.style, {
     position: 'fixed',
-    border: '2px solid #4f46e5',
-    background: 'rgba(79,70,229,0.15)',
+    border: `2px solid ${T.brand[600]}`,
+    borderRadius: '6px',
+    background: 'transparent',
+    boxShadow: '0 0 0 9999px rgba(15,23,42,0.28)',
     display: 'none',
     pointerEvents: 'none',
   });
@@ -105,11 +108,12 @@ function startCapture(faceMode = false) {
     top: '12px',
     left: '50%',
     transform: 'translateX(-50%)',
-    background: '#111827',
+    background: T.slate[900],
     color: '#fff',
-    font: '12px system-ui, sans-serif',
-    padding: '6px 10px',
-    borderRadius: '8px',
+    font: `500 12px ${T.font}`,
+    padding: '6px 12px',
+    borderRadius: T.radius.pill,
+    boxShadow: T.shadow.md,
     pointerEvents: 'none',
   });
   overlay.appendChild(hint);
