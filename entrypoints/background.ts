@@ -82,7 +82,7 @@ async function rebuildMenus() {
 
   browser.contextMenus.create({ id: ALL_ID, title: 'All engines', contexts: ['image'] });
   // Byte-grab path for images the redirect method can't reach (Instagram,
-  // Pinterest, hotlink-protected CDNs, blob:/data:). See SPEC §7 / Phase 0.3b.
+  // Pinterest, hotlink-protected CDNs, blob:/data:).
   browser.contextMenus.create({
     id: UPLOAD_ID,
     title: 'All engines (upload — Instagram/Pinterest)',
@@ -90,7 +90,7 @@ async function rebuildMenus() {
   });
 
   browser.contextMenus.create({ id: 'sep2', type: 'separator', contexts: ['image'] });
-  // Face-search flow (Phase 0.4): crop-assist → Yandex-first engine order.
+  // Face-search flow: crop-assist → Yandex-first engine order.
   browser.contextMenus.create({ id: FACE_ID, title: '🔍 Search this face…', contexts: ['image'] });
 
   // Anywhere on the page: capture a region to search (for images with no usable
@@ -125,7 +125,7 @@ async function handleMenuClick(menuItemId: string, srcUrl: string | undefined, t
 }
 
 /**
- * Phase 0.3b — grab an image's bytes, then run the S3 upload-search path.
+ * Grab an image's bytes, then run the S3 upload-search path.
  *
  * Tiers, cheapest first:
  *   1. `data:` URL — the bytes are already in hand.
@@ -162,7 +162,7 @@ async function grabAndSearch(srcUrl: string, tabId: number | undefined) {
 }
 
 /**
- * Phase 0.4 — open the crop-assist overlay for "Search this face".
+ * Open the crop-assist overlay for "Search this face".
  *
  * The overlay must show *clean* (non-tainted) pixels so the crop can be read
  * back off a canvas — so we grab the bytes here (host-permission fetch bypasses

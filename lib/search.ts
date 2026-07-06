@@ -3,7 +3,7 @@ import { ENGINES } from './engines';
 import { getSettings } from './settings';
 import { API_BASE } from './config';
 
-/** Phase 0.1 path: image already has a public URL → open each engine's results. */
+/** Image already has a public URL → open each engine's results. */
 export function openUrlSearches(
   imageUrl: string,
   engineIds: string[],
@@ -20,13 +20,12 @@ export function openUrlSearches(
 }
 
 /**
- * Phase 0.3 path: a raw image (pasted, captured, or byte-grabbed) with no
- * public URL.
+ * A raw image (pasted, captured, or byte-grabbed) with no public URL.
  *
  * We ask our backend for presigned S3 URLs (the bucket stays fully private),
  * PUT the bytes straight to S3, then run every enabled engine on the temporary
  * presigned GET URL — so captured/pasted/Instagram images search across ALL
- * engines, not just Lens. See SPEC §7.
+ * engines, not just Lens.
  */
 export async function searchImageBlob(blob: Blob, engineOverride?: string[]): Promise<void> {
   try {
@@ -93,7 +92,7 @@ export async function blobToDataUrlSW(blob: Blob): Promise<string> {
 }
 
 /**
- * Phase 0.3b: grab an image's bytes from the background service worker.
+ * Grab an image's bytes from the background service worker.
  *
  * The worker holds `<all_urls>` host permissions, so its fetch is NOT subject
  * to page CORS — it can read the bytes of most CDN images (Instagram/Pinterest

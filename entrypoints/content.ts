@@ -18,7 +18,7 @@ export default defineContentScript({
 let active = false;
 
 /**
- * Phase 0.3b — grab an image's bytes from inside the page.
+ * Grab an image's bytes from inside the page.
  *
  * The background worker delegates here only when it couldn't fetch the bytes
  * itself: `blob:` URLs are page-scoped, and some images need the page's session
@@ -221,7 +221,7 @@ function cropDataUrl(dataUrl: string, x: number, y: number, w: number, h: number
   });
 }
 
-// ── Phase 0.4: "Search this face" — crop assist + ethics gate ──────────────
+// ── "Search this face" — crop assist + ethics gate ─────────────────────────
 
 const ETHICS_LINE = 'For verifying people, sources & authenticity — not stalking or harassment. Follow local law.';
 

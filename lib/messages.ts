@@ -10,7 +10,7 @@ export const MSG = {
    *  cookie-gated/CORS-blocked src) and reply via SEARCH_IMAGE. */
   GRAB_IMAGE: 'ris:grab-image',
 
-  // ── Phase 0.4: face search ──────────────────────────────────────────────
+  // ── Face search ─────────────────────────────────────────────────────────
   /** background → content script: open the crop-assist overlay on an image
    *  (carries a clean data URL, or a srcUrl for the content script to grab). */
   START_FACE_CROP: 'ris:start-face-crop',
