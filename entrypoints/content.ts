@@ -276,23 +276,30 @@ async function ensureFaceEthicsAck(): Promise<boolean> {
 /** First-run responsible-use notice; resolves true if the user acknowledges. */
 function showEthicsGate(): Promise<boolean> {
   return new Promise((resolve) => {
-    const overlay = fullscreenOverlay('rgba(0,0,0,0.8)');
+    const overlay = fullscreenOverlay('rgba(15,23,42,0.80)');
     const card = document.createElement('div');
     Object.assign(card.style, {
       maxWidth: '440px',
       background: '#fff',
-      color: '#111827',
-      borderRadius: '14px',
+      color: T.slate[900],
+      borderRadius: T.radius.lg,
       padding: '24px',
-      font: '14px/1.55 system-ui, sans-serif',
-      boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
+      font: `14px/1.55 ${T.font}`,
+      border: `1px solid ${T.slate[200]}`,
+      boxShadow: T.shadow.card,
     });
+    const pill =
+      `display:inline-block;background:${T.accent[50]};color:${T.accent[700]};` +
+      `box-shadow:0 0 0 1px ${T.accent[100]} inset;border-radius:${T.radius.pill};` +
+      'padding:2px 10px;font-size:12px;font-weight:500;margin:0 0 12px';
     card.innerHTML =
-      '<h2 style="margin:0 0 10px;font-size:18px">Search this face — responsible use</h2>' +
-      '<p style="margin:0 0 10px">Face search is powerful. Use it to <b>reunite sources, ' +
-      'verify authenticity, and spot fakes or impersonation</b>.</p>' +
-      '<p style="margin:0 0 16px">Do <b>not</b> use it to stalk, harass, or identify people ' +
-      'without a legitimate reason. You are responsible for complying with your local laws.</p>';
+      `<span style="${pill}">Responsible use</span>` +
+      '<h2 style="margin:0 0 10px;font-size:18px;font-weight:600">Search this face</h2>' +
+      `<p style="margin:0 0 10px;color:${T.slate[700]}">Face search is powerful. Use it to ` +
+      '<b>reunite sources, verify authenticity, and spot fakes or impersonation</b>.</p>' +
+      `<p style="margin:0 0 16px;color:${T.slate[700]}">Do <b>not</b> use it to stalk, harass, ` +
+      'or identify people without a legitimate reason. You are responsible for complying with ' +
+      'your local laws.</p>';
 
     const row = document.createElement('div');
     Object.assign(row.style, { display: 'flex', gap: '8px', justifyContent: 'flex-end' });
@@ -321,7 +328,7 @@ function showEthicsGate(): Promise<boolean> {
 function openCropOverlay(dataUrl: string) {
   active = true;
 
-  const overlay = fullscreenOverlay('rgba(0,0,0,0.82)');
+  const overlay = fullscreenOverlay('rgba(15,23,42,0.82)');
   Object.assign(overlay.style, {
     flexDirection: 'column',
     gap: '12px',
@@ -332,8 +339,8 @@ function openCropOverlay(dataUrl: string) {
   const top = document.createElement('div');
   top.textContent = `Drag a box around the face, then Search. ${ETHICS_LINE}`;
   Object.assign(top.style, {
-    color: '#e5e7eb',
-    font: '13px/1.4 system-ui, sans-serif',
+    color: T.slate[200],
+    font: `13px/1.4 ${T.font}`,
     textAlign: 'center',
     maxWidth: '680px',
   });
@@ -354,8 +361,9 @@ function openCropOverlay(dataUrl: string) {
   const box = document.createElement('div');
   Object.assign(box.style, {
     position: 'absolute',
-    border: '2px solid #4f46e5',
-    boxShadow: '0 0 0 9999px rgba(0,0,0,0.45)',
+    border: `2px solid ${T.brand[600]}`,
+    borderRadius: '6px',
+    boxShadow: '0 0 0 9999px rgba(15,23,42,0.55)',
     display: 'none',
     pointerEvents: 'none',
   });
