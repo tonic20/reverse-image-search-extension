@@ -1,5 +1,6 @@
 import { browser } from 'wxt/browser';
 import { MSG, type CaptureViewportResponse } from '../lib/messages';
+import { T } from '../lib/theme';
 
 // WXT auto-imports `defineContentScript`.
 export default defineContentScript({
@@ -468,7 +469,32 @@ function cropImageRegion(
   return canvas.toDataURL('image/png');
 }
 
+// Inject hover/transition rules once. Base styles stay inline (host-page CSS
+// isolation); only interactive states — which inline styles can't express —
+// live here, scoped by the `ris-` class prefix to avoid host-page bleed.
+function ensureOverlayStyles(): void {
+  if (document.getElementById('ris-style')) return;
+  const style = document.createElement('style');
+  style.id = 'ris-style';
+  style.textContent = `
+    .ris-btn {
+      font: 500 14px ${T.font};
+      padding: 9px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: background .15s ease, box-shadow .15s ease;
+    }
+    .ris-btn--primary { background: ${T.brand[600]}; color: #fff; box-shadow: ${T.shadow.brand}; }
+    .ris-btn--primary:hover { background: ${T.brand[700]}; }
+    .ris-btn--secondary { background: #fff; color: ${T.slate[700]}; border-color: ${T.slate[200]}; }
+    .ris-btn--secondary:hover { background: ${T.slate[50]}; }
+  `;
+  document.documentElement.appendChild(style);
+}
+
 function fullscreenOverlay(bg: string): HTMLDivElement {
+  ensureOverlayStyles();
   const el = document.createElement('div');
   Object.assign(el.style, {
     position: 'fixed',
@@ -485,14 +511,6 @@ function fullscreenOverlay(bg: string): HTMLDivElement {
 function gateButton(label: string, primary: boolean): HTMLButtonElement {
   const b = document.createElement('button');
   b.textContent = label;
-  Object.assign(b.style, {
-    font: '14px system-ui, sans-serif',
-    padding: '9px 16px',
-    borderRadius: '9px',
-    border: primary ? 'none' : '1px solid #d1d5db',
-    background: primary ? '#4f46e5' : '#fff',
-    color: primary ? '#fff' : '#374151',
-    cursor: 'pointer',
-  });
+  b.className = `ris-btn ${primary ? 'ris-btn--primary' : 'ris-btn--secondary'}`;
   return b;
 }
