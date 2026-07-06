@@ -1,11 +1,12 @@
 /* Tokens mirror extension/lib/theme.ts (marketing @theme). Source of truth: theme.ts. */
 :root {
-  --brand-50: #eef2ff; --brand-500: #6366f1; --brand-600: #4f46e5; --brand-700: #4338ca;
-  --accent-50: #f0fdfa; --accent-100: #ccfbf1; --accent-600: #0d9488; --accent-700: #0f766e;
-  --slate-50: #f8fafc; --slate-100: #f1f5f9; --slate-200: #e2e8f0; --slate-300: #cbd5e1;
+  color-scheme: light;
+  --brand-500: #6366f1; --brand-600: #4f46e5; --brand-700: #4338ca;
+  --accent-50: #f0fdfa; --accent-100: #ccfbf1; --accent-700: #0f766e;
+  --slate-50: #f8fafc; --slate-200: #e2e8f0; --slate-300: #cbd5e1;
   --slate-400: #94a3b8; --slate-500: #64748b; --slate-700: #334155; --slate-900: #0f172a;
   --haze: #f4f5ff; --amber-50: #fffbeb; --amber-700: #b45309;
-  --radius-md: 12px; --radius-lg: 16px;
+  --radius-md: 12px;
   --shadow-brand: 0 1px 2px rgba(79,70,229,.20);
   --font: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
 }
@@ -24,7 +25,7 @@ body {
 h1 { font-size: 15px; font-weight: 600; letter-spacing: -0.01em; margin: 0; }
 .hint { font-size: 12px; color: var(--slate-500); margin: 6px 0 0; }
 h2 { font-size: 13px; font-weight: 600; color: var(--slate-900); margin: 16px 0 6px; }
-.sub { font-size: 11px; font-weight: 400; color: var(--slate-400); }
+.sub { font-size: 11px; font-weight: 400; color: var(--slate-500); }
 ul { list-style: none; margin: 0; padding: 0; }
 li {
   display: flex;
@@ -80,7 +81,7 @@ input[type="checkbox"] { accent-color: var(--brand-600); }
   color: var(--amber-700);
 }
 .row { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--slate-700); margin-top: 14px; }
-.footer { font-size: 11px; color: var(--slate-400); margin: 14px 0 0; }
+.footer { font-size: 11px; color: var(--slate-500); margin: 14px 0 0; }
 .badge {
   display: inline-block;
   background: var(--accent-50);

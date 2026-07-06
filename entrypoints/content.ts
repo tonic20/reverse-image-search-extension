@@ -77,7 +77,6 @@ function startCapture(faceMode = false) {
   if (active) return;
   active = true;
 
-  ensureOverlayStyles();
   const overlay = document.createElement('div');
   Object.assign(overlay.style, {
     position: 'fixed',
@@ -481,32 +480,7 @@ function cropImageRegion(
   return canvas.toDataURL('image/png');
 }
 
-// Inject hover/transition rules once. Base styles stay inline (host-page CSS
-// isolation); only interactive states — which inline styles can't express —
-// live here, scoped by the `ris-` class prefix to avoid host-page bleed.
-function ensureOverlayStyles(): void {
-  if (document.getElementById('ris-style')) return;
-  const style = document.createElement('style');
-  style.id = 'ris-style';
-  style.textContent = `
-    .ris-btn {
-      font: 500 14px ${T.font};
-      padding: 9px 16px;
-      border-radius: 10px;
-      cursor: pointer;
-      border: 1px solid transparent;
-      transition: background .15s ease, box-shadow .15s ease;
-    }
-    .ris-btn--primary { background: ${T.brand[600]}; color: #fff; box-shadow: ${T.shadow.brand}; }
-    .ris-btn--primary:hover { background: ${T.brand[700]}; }
-    .ris-btn--secondary { background: #fff; color: ${T.slate[700]}; border-color: ${T.slate[200]}; }
-    .ris-btn--secondary:hover { background: ${T.slate[50]}; }
-  `;
-  document.documentElement.appendChild(style);
-}
-
 function fullscreenOverlay(bg: string): HTMLDivElement {
-  ensureOverlayStyles();
   const el = document.createElement('div');
   Object.assign(el.style, {
     position: 'fixed',
@@ -523,6 +497,20 @@ function fullscreenOverlay(bg: string): HTMLDivElement {
 function gateButton(label: string, primary: boolean): HTMLButtonElement {
   const b = document.createElement('button');
   b.textContent = label;
-  b.className = `ris-btn ${primary ? 'ris-btn--primary' : 'ris-btn--secondary'}`;
+  const base = {
+    font: `500 14px ${T.font}`,
+    padding: '9px 16px',
+    borderRadius: '10px',
+    cursor: 'pointer',
+    border: `1px solid ${primary ? 'transparent' : T.slate[200]}`,
+    background: primary ? T.brand[600] : '#fff',
+    color: primary ? '#fff' : T.slate[700],
+    boxShadow: primary ? T.shadow.brand : 'none',
+    transition: 'background .15s ease, box-shadow .15s ease',
+  };
+  Object.assign(b.style, base);
+  const hoverBg = primary ? T.brand[700] : T.slate[50];
+  b.addEventListener('mouseenter', () => { b.style.background = hoverBg; });
+  b.addEventListener('mouseleave', () => { b.style.background = base.background; });
   return b;
 }
