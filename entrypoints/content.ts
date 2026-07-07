@@ -16,10 +16,15 @@ export default defineContentScript({
     );
 
     browser.runtime.onMessage.addListener((message) => {
-      const msg = message as { type?: string; srcUrl?: string; dataUrl?: string };
+      const msg = message as {
+        type?: string;
+        srcUrl?: string;
+        dataUrl?: string;
+        engineIds?: string[];
+      };
       if (msg?.type === MSG.START_CAPTURE) startCapture(false);
       else if (msg?.type === MSG.START_FACE_CAPTURE) startCapture(true);
-      else if (msg?.type === MSG.GRAB_IMAGE && msg.srcUrl) void grabImage(msg.srcUrl);
+      else if (msg?.type === MSG.GRAB_IMAGE && msg.srcUrl) void grabImage(msg.srcUrl, msg.engineIds);
       else if (msg?.type === MSG.START_FACE_CROP) void startFaceCrop(msg.dataUrl, msg.srcUrl);
       else if (msg?.type === MSG.RESOLVE_IMAGE) {
         if (!lastRightClickSrc) {
@@ -43,14 +48,14 @@ let lastRightClickSrc: string | null = null;
  * (cross-origin without CORS), fall back to drawing the live <img> element to a
  * canvas — which works for same-origin and CORS-enabled images.
  */
-async function grabImage(srcUrl: string) {
+async function grabImage(srcUrl: string, engineIds?: string[]) {
   try {
     const dataUrl = await fetchAsDataUrl(srcUrl).catch(() => elementToDataUrl(srcUrl));
     if (!dataUrl) {
       console.warn('[RIS] could not grab image bytes in-page:', srcUrl);
       return;
     }
-    await browser.runtime.sendMessage({ type: MSG.SEARCH_IMAGE, dataUrl });
+    await browser.runtime.sendMessage({ type: MSG.SEARCH_IMAGE, dataUrl, engineIds });
   } catch (err) {
     console.error('[RIS] in-page image grab failed:', err);
   }

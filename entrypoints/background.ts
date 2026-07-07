@@ -28,7 +28,12 @@ export default defineBackground(() => {
   });
 
   browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    const msg = message as { type?: string; dataUrl?: string; srcUrl?: string };
+    const msg = message as {
+      type?: string;
+      dataUrl?: string;
+      srcUrl?: string;
+      engineIds?: string[];
+    };
 
     if (msg?.type === MSG.CAPTURE_VIEWPORT) {
       const windowId = sender.tab?.windowId;
@@ -46,7 +51,7 @@ export default defineBackground(() => {
     }
 
     if (msg?.type === MSG.SEARCH_IMAGE && msg.dataUrl) {
-      void searchImageByUpload(msg.dataUrl);
+      void searchImageByUpload(msg.dataUrl, msg.engineIds);
     }
 
     if (msg?.type === MSG.SEARCH_FACE && msg.dataUrl) {
@@ -135,30 +140,36 @@ async function handleMenuClick(menuItemId: string, srcUrl: string | undefined, t
  *      need the page's session cookies. The content script replies via
  *      SEARCH_IMAGE, so nothing more to do here.
  */
-async function grabAndSearch(srcUrl: string, tabId: number | undefined) {
+async function grabAndSearch(
+  srcUrl: string,
+  tabId: number | undefined,
+  engineIds?: string[],
+) {
+  const ids = engineIds ?? (await getSettings()).engineOrder;
+
   if (srcUrl.startsWith('data:')) {
-    await searchImageByUpload(srcUrl);
+    await searchImageByUpload(srcUrl, ids);
     return;
   }
 
   const blob = await grabImageBlobFromBackground(srcUrl);
   if (blob) {
-    await searchImageBlob(blob);
+    await searchImageBlob(blob, ids);
     return;
   }
 
   // Fall back to grabbing the bytes inside the page (blob:/cookie-gated/CORS).
   if (tabId != null) {
     try {
-      await browser.tabs.sendMessage(tabId, { type: MSG.GRAB_IMAGE, srcUrl });
+      await browser.tabs.sendMessage(tabId, { type: MSG.GRAB_IMAGE, srcUrl, engineIds: ids });
       return;
     } catch (err) {
       console.error('[RIS] content-script grab dispatch failed:', err);
     }
   }
   // Last resort: let the engines try the raw URL themselves.
-  const { engineOrder, openInBackground } = await getSettings();
-  openUrlSearches(srcUrl, engineOrder, openInBackground);
+  const { openInBackground } = await getSettings();
+  openUrlSearches(srcUrl, ids, openInBackground);
 }
 
 /**
