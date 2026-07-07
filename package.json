@@ -10,10 +10,13 @@
     "build": "wxt build",
     "zip": "wxt zip",
     "compile": "tsc --noEmit",
-    "postinstall": "wxt prepare"
+    "postinstall": "wxt prepare",
+    "test": "vitest run"
   },
   "devDependencies": {
+    "happy-dom": "^20.10.6",
     "typescript": "^5.6.3",
+    "vitest": "^3.2.7",
     "wxt": "^0.20.0"
   },
   "//overrides": "Force-patch transitive deps deep in WXT's Firefox-runner toolchain (web-ext-run). Dev/build-time only; none ship in the extension bundle. Avoids the destructive `audit fix --force` that would downgrade wxt to 0.3.2.",
