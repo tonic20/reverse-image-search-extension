@@ -110,24 +110,24 @@ async function rebuildMenus() {
   // named after the extension ("Reverse Image Search"), so this is exactly one
   // level deep. (An explicit parent on top of that is what double-nested before.)
 
-  // Per-engine, on an image.
+  // Per-engine, on an image or an overlay-covered image (page context).
   for (const e of engineList(engineOrder)) {
-    browser.contextMenus.create({ id: e.id, title: e.name, contexts: ['image'] });
+    browser.contextMenus.create({ id: e.id, title: e.name, contexts: ['page', 'image'] });
   }
-  browser.contextMenus.create({ id: 'sep', type: 'separator', contexts: ['image'] });
+  browser.contextMenus.create({ id: 'sep', type: 'separator', contexts: ['page', 'image'] });
 
-  browser.contextMenus.create({ id: ALL_ID, title: 'All engines', contexts: ['image'] });
+  browser.contextMenus.create({ id: ALL_ID, title: 'All engines', contexts: ['page', 'image'] });
   // Byte-grab path for images the redirect method can't reach (Instagram,
   // Pinterest, hotlink-protected CDNs, blob:/data:).
   browser.contextMenus.create({
     id: UPLOAD_ID,
     title: 'All engines (upload — Instagram/Pinterest)',
-    contexts: ['image'],
+    contexts: ['page', 'image'],
   });
 
-  browser.contextMenus.create({ id: 'sep2', type: 'separator', contexts: ['image'] });
+  browser.contextMenus.create({ id: 'sep2', type: 'separator', contexts: ['page', 'image'] });
   // Face-search flow: crop-assist → Yandex-first engine order.
-  browser.contextMenus.create({ id: FACE_ID, title: '🔍 Search this face…', contexts: ['image'] });
+  browser.contextMenus.create({ id: FACE_ID, title: '🔍 Search this face…', contexts: ['page', 'image'] });
 
   // Anywhere on the page: capture a region to search (for images with no usable
   // URL, or to search just part of the page).
@@ -138,26 +138,48 @@ async function rebuildMenus() {
   });
 }
 
-async function handleMenuClick(menuItemId: string, srcUrl: string | undefined, tabId: number | undefined) {
+async function handleMenuClick(
+  menuItemId: string,
+  srcUrl: string | undefined,
+  tabId: number | undefined,
+) {
   if (menuItemId === CAPTURE_ID) {
     if (tabId != null) await sendToTab(tabId, { type: MSG.START_CAPTURE });
     return;
   }
 
-  if (menuItemId === UPLOAD_ID) {
-    if (srcUrl) await grabAndSearch(srcUrl, tabId);
-    return;
+  // On normal sites Chrome hands us info.srcUrl. On overlay sites (Instagram)
+  // it doesn't, so ask the content script which image was under the cursor.
+  let imageUrl = srcUrl;
+  let viaOverlay = false;
+  if (!imageUrl) {
+    if (tabId == null) return;
+    const resp = await sendToTab<{ srcUrl: string | null }>(tabId, { type: MSG.RESOLVE_IMAGE });
+    if (resp === undefined) return; // no content script — reload hint already shown
+    if (!resp.srcUrl) return; // nothing under the cursor — content showed the toast
+    imageUrl = resp.srcUrl;
+    viaOverlay = true;
   }
+
+  const { engineOrder, openInBackground } = await getSettings();
 
   if (menuItemId === FACE_ID) {
-    if (srcUrl) await startFaceCrop(srcUrl, tabId);
+    await startFaceCrop(imageUrl, tabId);
+    return;
+  }
+  if (menuItemId === UPLOAD_ID) {
+    await grabAndSearch(imageUrl, tabId, engineOrder);
     return;
   }
 
-  if (!srcUrl) return;
-  const { engineOrder, openInBackground } = await getSettings();
   const ids = menuItemId === ALL_ID ? engineOrder : [menuItemId];
-  openUrlSearches(srcUrl, ids, openInBackground);
+  if (viaOverlay) {
+    // Overlay-site image URLs usually don't hotlink → byte-grab then upload.
+    await grabAndSearch(imageUrl, tabId, ids);
+  } else {
+    // Normal site → direct redirect; nothing touches our server.
+    openUrlSearches(imageUrl, ids, openInBackground);
+  }
 }
 
 /**
