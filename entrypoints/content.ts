@@ -1,22 +1,38 @@
 import { browser } from 'wxt/browser';
 import { MSG, type CaptureViewportResponse } from '../lib/messages';
 import { T } from '../lib/theme';
+import { pickImageUrl } from '../lib/overlay-image';
 
 // WXT auto-imports `defineContentScript`.
 export default defineContentScript({
   matches: ['<all_urls>'],
   main() {
+    document.addEventListener(
+      'contextmenu',
+      (e) => {
+        lastRightClickSrc = pickImageUrl(document.elementsFromPoint(e.clientX, e.clientY));
+      },
+      true,
+    );
+
     browser.runtime.onMessage.addListener((message) => {
       const msg = message as { type?: string; srcUrl?: string; dataUrl?: string };
       if (msg?.type === MSG.START_CAPTURE) startCapture(false);
       else if (msg?.type === MSG.START_FACE_CAPTURE) startCapture(true);
       else if (msg?.type === MSG.GRAB_IMAGE && msg.srcUrl) void grabImage(msg.srcUrl);
       else if (msg?.type === MSG.START_FACE_CROP) void startFaceCrop(msg.dataUrl, msg.srcUrl);
+      else if (msg?.type === MSG.RESOLVE_IMAGE) {
+        if (!lastRightClickSrc) {
+          showToast('No image found there — try “Capture region”.');
+        }
+        return Promise.resolve({ srcUrl: lastRightClickSrc });
+      }
     });
   },
 });
 
 let active = false;
+let lastRightClickSrc: string | null = null;
 
 /**
  * Grab an image's bytes from inside the page.
@@ -478,6 +494,37 @@ function cropImageRegion(
   if (!ctx) throw new Error('no 2d context');
   ctx.drawImage(img, sx, sy, sw, sh, 0, 0, sw, sh);
   return canvas.toDataURL('image/png');
+}
+
+/** Brief, self-dismissing bottom-center toast. Content script is present, so no
+ *  permission is needed. */
+function showToast(text: string) {
+  const toast = document.createElement('div');
+  toast.textContent = text;
+  Object.assign(toast.style, {
+    position: 'fixed',
+    bottom: '22px',
+    left: '50%',
+    transform: 'translateX(-50%)',
+    zIndex: '2147483647',
+    background: T.slate[900],
+    color: '#fff',
+    font: `500 13px ${T.font}`,
+    padding: '10px 16px',
+    borderRadius: T.radius.pill,
+    boxShadow: T.shadow.md,
+    pointerEvents: 'none',
+    opacity: '0',
+    transition: 'opacity .18s ease',
+  });
+  document.documentElement.appendChild(toast);
+  requestAnimationFrame(() => {
+    toast.style.opacity = '1';
+  });
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    setTimeout(() => toast.remove(), 220);
+  }, 2600);
 }
 
 function fullscreenOverlay(bg: string): HTMLDivElement {

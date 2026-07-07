@@ -9,6 +9,10 @@ export const MSG = {
   /** background → content script: grab an image's bytes in-page (blob:/data:/
    *  cookie-gated/CORS-blocked src) and reply via SEARCH_IMAGE. */
   GRAB_IMAGE: 'ris:grab-image',
+  /** background → content script: which image was under the last right-click?
+   *  Content replies { srcUrl: string | null }. Sent only when Chrome gave no
+   *  info.srcUrl (overlay sites like Instagram). On null, content shows a toast. */
+  RESOLVE_IMAGE: 'ris:resolve-image',
 
   // ── Face search ─────────────────────────────────────────────────────────
   /** background → content script: open the crop-assist overlay on an image
