@@ -29,11 +29,11 @@ export function pickImageUrl(elements: Element[]): string | null {
 
 /** First url(...) in an element's computed background-image, else null. */
 export function backgroundImageUrl(el: Element): string | null {
-  // Prefer the inline style first: jsdom/happy-dom test environments don't
-  // always reflect an inline style into getComputedStyle(), but real
-  // browsers do (and Instagram's background-image comes from a stylesheet,
-  // which getComputedStyle always resolves).
-  const bg = (el as HTMLElement).style?.backgroundImage || getComputedStyle(el).backgroundImage;
+  const computed = getComputedStyle(el).backgroundImage;
+  const bg =
+    !computed || computed === 'none'
+      ? (el as HTMLElement).style.backgroundImage
+      : computed;
   if (!bg || bg === 'none') return null;
   const match = /url\((['"]?)(.*?)\1\)/.exec(bg);
   return match ? match[2] : null;
