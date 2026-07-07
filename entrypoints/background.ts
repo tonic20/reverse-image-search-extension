@@ -27,6 +27,10 @@ export default defineBackground(() => {
     void handleMenuClick(String(info.menuItemId), info.srcUrl, tab?.id);
   });
 
+  browser.tabs.onUpdated.addListener((tabId, changeInfo) => {
+    if (changeInfo.status === 'loading') clearHint(tabId);
+  });
+
   browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
     const msg = message as {
       type?: string;
@@ -70,6 +74,33 @@ async function faceSearchUrl(srcUrl: string) {
   openUrlSearches(srcUrl, FACE_ENGINE_ORDER, openInBackground);
 }
 
+/**
+ * Send a message to a tab's content script. If the script isn't there yet
+ * (tab was open before the extension loaded), Chrome rejects with "Receiving
+ * end does not exist" — surface a reload hint via the action badge instead of
+ * failing silently. Uses only the action API, so no extra permission.
+ */
+async function sendToTab<T = unknown>(tabId: number, message: unknown): Promise<T | undefined> {
+  try {
+    return (await browser.tabs.sendMessage(tabId, message)) as T;
+  } catch (err) {
+    console.warn('[RIS] content script not reachable — hinting reload:', err);
+    hintReloadNeeded(tabId);
+    return undefined;
+  }
+}
+
+function hintReloadNeeded(tabId: number) {
+  void browser.action.setBadgeText({ tabId, text: '↻' });
+  void browser.action.setBadgeBackgroundColor({ tabId, color: '#4f46e5' });
+  void browser.action.setTitle({ tabId, title: 'Reload this page to use Reverse Image Search' });
+}
+
+function clearHint(tabId: number) {
+  void browser.action.setBadgeText({ tabId, text: '' });
+  void browser.action.setTitle({ tabId, title: 'Reverse Image Search' });
+}
+
 async function rebuildMenus() {
   await browser.contextMenus.removeAll();
   const { engineOrder } = await getSettings();
@@ -109,7 +140,7 @@ async function rebuildMenus() {
 
 async function handleMenuClick(menuItemId: string, srcUrl: string | undefined, tabId: number | undefined) {
   if (menuItemId === CAPTURE_ID) {
-    if (tabId != null) await browser.tabs.sendMessage(tabId, { type: MSG.START_CAPTURE });
+    if (tabId != null) await sendToTab(tabId, { type: MSG.START_CAPTURE });
     return;
   }
 
