@@ -90,15 +90,23 @@ async function sendToTab<T = unknown>(tabId: number, message: unknown): Promise<
   }
 }
 
+// Badge hints are best-effort: the target tab may be closed (or navigating away)
+// by the time the async action call runs, which rejects with "No tab with id".
+// Swallow that — clearHint fires on every tab's `loading` event, so closing a
+// still-loading results tab would otherwise log an uncaught rejection.
+function safeAction(p: Promise<unknown>) {
+  void p.catch(() => {});
+}
+
 function hintReloadNeeded(tabId: number) {
-  void browser.action.setBadgeText({ tabId, text: '↻' });
-  void browser.action.setBadgeBackgroundColor({ tabId, color: '#4f46e5' });
-  void browser.action.setTitle({ tabId, title: 'Reload this page to use Reverse Image Search' });
+  safeAction(browser.action.setBadgeText({ tabId, text: '↻' }));
+  safeAction(browser.action.setBadgeBackgroundColor({ tabId, color: '#4f46e5' }));
+  safeAction(browser.action.setTitle({ tabId, title: 'Reload this page to use Reverse Image Search' }));
 }
 
 function clearHint(tabId: number) {
-  void browser.action.setBadgeText({ tabId, text: '' });
-  void browser.action.setTitle({ tabId, title: 'Reverse Image Search' });
+  safeAction(browser.action.setBadgeText({ tabId, text: '' }));
+  safeAction(browser.action.setTitle({ tabId, title: 'Reverse Image Search' }));
 }
 
 async function rebuildMenus() {
