@@ -3,9 +3,10 @@ import { defineConfig } from 'wxt';
 // WXT config — https://wxt.dev
 export default defineConfig({
   manifest: {
-    name: 'Reverse Image Search',
+    // Name + description mirror the Chrome Web Store listing copy (docs/STORE-LISTING.md §1).
+    name: 'Reverse Image Search — All Engines & Face',
     description:
-      'Multi-engine reverse image search — right-click, paste, capture, or search where URLs fail.',
+      'Reverse image search across Google Lens, Yandex, Bing & TinEye in one right-click. Works on Instagram & Pinterest. Search a face.',
     // Minimal set. captureVisibleTab is satisfied by <all_urls> + activeTab; opening
     // result tabs, tabs.query for tab.id, and sendMessage need no permission. Removed
     // (unused): 'tabs', 'scripting'. Never needed (impl avoided them): 'offscreen'
