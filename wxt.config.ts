@@ -4,7 +4,7 @@ import { defineConfig } from 'wxt';
 export default defineConfig({
   manifest: {
     // Name + description mirror the Chrome Web Store listing copy (docs/STORE-LISTING.md §1).
-    name: 'Reverse Image Search — All Engines & Face',
+    name: 'Reverse Image Search Anywhere',
     description:
       'Reverse image search across Google Lens, Yandex, Bing & TinEye in one right-click. Works on Instagram & Pinterest. Search a face.',
     // Minimal set. captureVisibleTab is satisfied by <all_urls> + activeTab; opening

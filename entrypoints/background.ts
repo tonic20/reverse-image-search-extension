@@ -106,7 +106,7 @@ function hintReloadNeeded(tabId: number) {
 
 function clearHint(tabId: number) {
   safeAction(browser.action.setBadgeText({ tabId, text: '' }));
-  safeAction(browser.action.setTitle({ tabId, title: 'Reverse Image Search' }));
+  safeAction(browser.action.setTitle({ tabId, title: 'Reverse Image Search Anywhere' }));
 }
 
 async function rebuildMenus() {
@@ -115,7 +115,7 @@ async function rebuildMenus() {
 
   // Flat menu: every action is a TOP-LEVEL item — no parent of our own. Chrome
   // auto-collapses an extension's multiple top-level items into a single submenu
-  // named after the extension ("Reverse Image Search"), so this is exactly one
+  // named after the extension ("Reverse Image Search Anywhere"), so this is exactly one
   // level deep. (An explicit parent on top of that is what double-nested before.)
 
   // Per-engine, on an image or an overlay-covered image (page context).
