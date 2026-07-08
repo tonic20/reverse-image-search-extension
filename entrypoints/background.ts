@@ -219,18 +219,22 @@ async function grabAndSearch(
     return;
   }
 
-  // Fall back to grabbing the bytes inside the page (blob:/cookie-gated/CORS).
+  // Fall back to grabbing the bytes inside the page: an in-page fetch carries the
+  // site's session cookies and same-origin referer, so it reaches cookie-gated /
+  // private images (ChatGPT, authenticated CDNs) and blob: URLs. On success the
+  // content script uploads; on failure it toasts. If the script isn't there (the
+  // tab was open before the extension loaded), sendToTab flags a reload.
+  //
+  // We deliberately DON'T fall back to opening the raw srcUrl in the engines.
+  // grabAndSearch is only reached via the explicit "upload" item or on overlay
+  // sites — both cases where the user chose not to hand the image's URL to third
+  // parties. For a private URL (e.g. ChatGPT) opening it raw both fails and leaks
+  // a signed, authenticated link to every engine.
   if (tabId != null) {
-    try {
-      await browser.tabs.sendMessage(tabId, { type: MSG.GRAB_IMAGE, srcUrl, engineIds: ids });
-      return;
-    } catch (err) {
-      console.error('[RIS] content-script grab dispatch failed:', err);
-    }
+    await sendToTab(tabId, { type: MSG.GRAB_IMAGE, srcUrl, engineIds: ids });
+    return;
   }
-  // Last resort: let the engines try the raw URL themselves.
-  const { openInBackground } = await getSettings();
-  openUrlSearches(srcUrl, ids, openInBackground);
+  console.warn('[RIS] could not grab image bytes for upload (no tab context):', srcUrl);
 }
 
 /**

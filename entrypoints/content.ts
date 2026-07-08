@@ -51,13 +51,10 @@ let lastRightClickSrc: string | null = null;
 async function grabImage(srcUrl: string, engineIds?: string[]) {
   try {
     const dataUrl = await fetchAsDataUrl(srcUrl).catch(() => elementToDataUrl(srcUrl));
-    if (!dataUrl) {
-      console.warn('[RIS] could not grab image bytes in-page:', srcUrl);
-      return;
-    }
     await browser.runtime.sendMessage({ type: MSG.SEARCH_IMAGE, dataUrl, engineIds });
   } catch (err) {
     console.error('[RIS] in-page image grab failed:', err);
+    showToast('Couldn’t read this image — try “Capture region”.');
   }
 }
 
