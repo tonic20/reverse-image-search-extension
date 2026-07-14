@@ -59,3 +59,24 @@ describe.each(otherLocales)('locale %s matches en', (locale) => {
     }
   });
 });
+
+describe('extension locale coverage', () => {
+  const REQUIRED_LOCALES = ['es', 'pt_BR', 'fr', 'de', 'ru', 'ja'];
+  it('ships every target locale', () => {
+    expect([...otherLocales].sort()).toEqual([...REQUIRED_LOCALES].sort());
+  });
+});
+
+// Chrome Web Store caps the manifest `description` field (populated here via
+// __MSG_extDescription__) at 132 characters. A longer localized value fails
+// submission, so this guard measures every locale's extDescription by code
+// point (not UTF-16 .length, which would misreport around astral chars).
+const MANIFEST_DESCRIPTION_MAX = 132;
+
+describe.each(['en', ...otherLocales])('locale %s manifest description', (locale) => {
+  const msgs = locale === 'en' ? en : load(locale);
+  it(`extDescription is at most ${MANIFEST_DESCRIPTION_MAX} code points`, () => {
+    const value = msgs.extDescription ?? '';
+    expect([...value].length).toBeLessThanOrEqual(MANIFEST_DESCRIPTION_MAX);
+  });
+});
