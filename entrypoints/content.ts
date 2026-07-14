@@ -1,4 +1,5 @@
 import { browser } from 'wxt/browser';
+import { i18n } from '#i18n';
 import { MSG, type CaptureViewportResponse } from '../lib/messages';
 import { T } from '../lib/theme';
 import { pickImageUrl } from '../lib/overlay-image';
@@ -28,7 +29,7 @@ export default defineContentScript({
       else if (msg?.type === MSG.START_FACE_CROP) void startFaceCrop(msg.dataUrl, msg.srcUrl);
       else if (msg?.type === MSG.RESOLVE_IMAGE) {
         if (!lastRightClickSrc) {
-          showToast('No image found there — try “Capture region”.');
+          showToast(i18n.t('content_toast_no_image_here'));
         }
         return Promise.resolve({ srcUrl: lastRightClickSrc });
       }
@@ -54,7 +55,7 @@ async function grabImage(srcUrl: string, engineIds?: string[]) {
     await browser.runtime.sendMessage({ type: MSG.SEARCH_IMAGE, dataUrl, engineIds });
   } catch (err) {
     console.error('[RIS] in-page image grab failed:', err);
-    showToast('Couldn’t read this image — try “Capture region”.');
+    showToast(i18n.t('content_toast_unreadable'));
   }
 }
 
@@ -117,9 +118,7 @@ function startCapture(faceMode = false) {
   overlay.appendChild(box);
 
   const hint = document.createElement('div');
-  hint.textContent = faceMode
-    ? 'Drag a box around the face · Esc to cancel'
-    : 'Drag to select an area · Esc to cancel';
+  hint.textContent = faceMode ? i18n.t('capture_hint_face') : i18n.t('capture_hint_area');
   Object.assign(hint.style, {
     position: 'fixed',
     top: '12px',
@@ -245,8 +244,6 @@ function cropDataUrl(dataUrl: string, x: number, y: number, w: number, h: number
 
 // ── "Search this face" — crop assist + ethics gate ─────────────────────────
 
-const ETHICS_LINE = 'For verifying people, sources & authenticity — not stalking or harassment. Follow local law.';
-
 /**
  * Entry from the context menu. `dataUrl` is clean bytes grabbed by the worker;
  * if it's absent (blob:/cookie-gated) we grab in-page. Then: first-run ethics
@@ -310,18 +307,15 @@ function showEthicsGate(): Promise<boolean> {
       `box-shadow:0 0 0 1px ${T.accent[100]} inset;border-radius:${T.radius.pill};` +
       'padding:2px 10px;font-size:12px;font-weight:500;margin:0 0 12px';
     card.innerHTML =
-      `<span style="${pill}">Responsible use</span>` +
-      '<h2 style="margin:0 0 10px;font-size:18px;font-weight:600">Search this face</h2>' +
-      `<p style="margin:0 0 10px;color:${T.slate[700]}">Face search is powerful. Use it to ` +
-      '<b>reunite sources, verify authenticity, and spot fakes or impersonation</b>.</p>' +
-      `<p style="margin:0 0 16px;color:${T.slate[700]}">Do <b>not</b> use it to stalk, harass, ` +
-      'or identify people without a legitimate reason. You are responsible for complying with ' +
-      'your local laws.</p>';
+      `<span style="${pill}">${i18n.t('ethics_pill')}</span>` +
+      `<h2 style="margin:0 0 10px;font-size:18px;font-weight:600">${i18n.t('search_this_face')}</h2>` +
+      `<p style="margin:0 0 10px;color:${T.slate[700]}">${i18n.t('ethics_body1_html')}</p>` +
+      `<p style="margin:0 0 16px;color:${T.slate[700]}">${i18n.t('ethics_body2_html')}</p>`;
 
     const row = document.createElement('div');
     Object.assign(row.style, { display: 'flex', gap: '8px', justifyContent: 'flex-end' });
-    const cancel = gateButton('Cancel', false);
-    const ok = gateButton('I understand', true);
+    const cancel = gateButton(i18n.t('cancel'), false);
+    const ok = gateButton(i18n.t('i_understand'), true);
     const done = (v: boolean) => {
       overlay.remove();
       window.removeEventListener('keydown', onKey);
@@ -354,7 +348,7 @@ function openCropOverlay(dataUrl: string) {
   });
 
   const top = document.createElement('div');
-  top.textContent = `Drag a box around the face, then Search. ${ETHICS_LINE}`;
+  top.textContent = `${i18n.t('crop_instruction')} ${i18n.t('ethics_line')}`;
   Object.assign(top.style, {
     color: T.slate[200],
     font: `13px/1.4 ${T.font}`,
@@ -389,8 +383,8 @@ function openCropOverlay(dataUrl: string) {
 
   const bar = document.createElement('div');
   Object.assign(bar.style, { display: 'flex', gap: '8px' });
-  const cancelBtn = gateButton('Cancel', false);
-  const searchBtn = gateButton('Search this face', true);
+  const cancelBtn = gateButton(i18n.t('cancel'), false);
+  const searchBtn = gateButton(i18n.t('search_this_face'), true);
   bar.append(cancelBtn, searchBtn);
 
   overlay.append(top, wrap, bar);
