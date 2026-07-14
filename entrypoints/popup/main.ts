@@ -1,7 +1,16 @@
 import { browser } from 'wxt/browser';
+import { i18n } from '#i18n';
 import { ENGINES, DEFAULT_ENGINE_ORDER } from '../../lib/engines';
 import { getSettings, setSettings } from '../../lib/settings';
 import { MSG } from '../../lib/messages';
+import { localizeDom } from '../../lib/dom-i18n';
+
+const ENGINE_NOTE_KEY = {
+  google: 'engine_note_google',
+  bing: 'engine_note_bing',
+  yandex: 'engine_note_yandex',
+  tineye: 'engine_note_tineye',
+} as const;
 
 async function renderEngines() {
   const settings = await getSettings();
@@ -34,7 +43,8 @@ async function renderEngines() {
     icon.onerror = () => (icon.style.display = 'none');
 
     const label = document.createElement('span');
-    label.innerHTML = `<b>${e.name}</b> <span class="sub">${e.note ?? ''}</span>`;
+    const note = i18n.t(ENGINE_NOTE_KEY[id as keyof typeof ENGINE_NOTE_KEY]);
+    label.innerHTML = `<b>${e.name}</b> <span class="sub">${note}</span>`;
 
     li.append(cb, icon, label);
     list.append(li);
@@ -60,18 +70,18 @@ async function sendToActiveTab(type: string, retryLabel: string) {
   } catch {
     // The content script isn't present on this tab (e.g. a page open before
     // install, or a restricted page). Ask the user to reload.
-    status(`Reload this page, then try ${retryLabel} again.`);
+    status(i18n.t('status_reload', [retryLabel]));
   }
 }
 
-const startCapture = () => sendToActiveTab(MSG.START_CAPTURE, 'Capture region');
-const startFaceCapture = () => sendToActiveTab(MSG.START_FACE_CAPTURE, 'Search this face');
+const startCapture = () => sendToActiveTab(MSG.START_CAPTURE, i18n.t('popup_capture'));
+const startFaceCapture = () => sendToActiveTab(MSG.START_FACE_CAPTURE, i18n.t('search_this_face'));
 
 async function onPaste(e: ClipboardEvent) {
   const item = Array.from(e.clipboardData?.items ?? []).find((i) => i.type.startsWith('image/'));
   const file = item?.getAsFile();
   if (!file) {
-    status('No image found in the clipboard.');
+    status(i18n.t('status_no_clipboard_image'));
     return;
   }
   const dataUrl = await fileToDataUrl(file);
@@ -91,4 +101,5 @@ function fileToDataUrl(file: Blob): Promise<string> {
 document.getElementById('capture')!.addEventListener('click', startCapture);
 document.getElementById('face')!.addEventListener('click', startFaceCapture);
 document.addEventListener('paste', onPaste);
+localizeDom(document, (key) => i18n.t(key as Parameters<typeof i18n.t>[0]));
 renderEngines();

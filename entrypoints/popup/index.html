@@ -15,26 +15,26 @@
         <circle cx="22" cy="21" r="6.5" fill="#ffffff" stroke="#0d9488" stroke-width="2.2"/>
         <line x1="26.8" y1="25.8" x2="29.5" y2="28.5" stroke="#0d9488" stroke-width="2.4" stroke-linecap="round"/>
       </svg>
-      <h1>Reverse Image Search Anywhere</h1>
+      <h1 data-i18n="popup_heading">Reverse Image Search Anywhere</h1>
     </div>
-    <p class="hint">Right-click any image → <b>Reverse image search</b>.</p>
+    <p class="hint" data-i18n-html="popup_hint_html">Right-click any image → <b>Reverse image search</b>.</p>
 
     <div class="actions">
-      <button id="capture" class="btn">◱ Capture region</button>
-      <button id="face" class="btn">🔍 Search this face</button>
-      <div id="paste" class="paste" tabindex="0">Paste an image — ⌘/Ctrl + V</div>
+      <button id="capture" class="btn"><span aria-hidden="true">◱</span> <span data-i18n="popup_capture">Capture region</span></button>
+      <button id="face" class="btn"><span aria-hidden="true">🔍</span> <span data-i18n="search_this_face">Search this face</span></button>
+      <div id="paste" class="paste" tabindex="0" data-i18n="popup_paste">Paste an image — ⌘/Ctrl + V</div>
     </div>
     <p class="note" id="status" hidden></p>
 
-    <h2>Engines <span class="sub">(toggle to enable)</span></h2>
+    <h2><span data-i18n="popup_engines_title">Engines</span> <span class="sub" data-i18n="popup_engines_sub">(toggle to enable)</span></h2>
     <ul id="engines"></ul>
 
     <label class="row">
       <input type="checkbox" id="openInBackground" />
-      Open “All engines” tabs in the background
+      <span data-i18n="popup_open_background">Open “All engines” tabs in the background</span>
     </label>
 
-    <p class="footer"><span class="badge">Private</span>Captured / pasted / face images upload privately and search across every enabled engine</p>
+    <p class="footer"><span class="badge" data-i18n="popup_badge_private">Private</span><span data-i18n="popup_footer">Captured / pasted / face images upload privately and search across every enabled engine</span></p>
     <script type="module" src="./main.ts"></script>
   </body>
 </html>
