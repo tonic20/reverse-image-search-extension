@@ -1,0 +1,48 @@
+# Manifest — Chrome substitutes __MSG_extName__ / __MSG_extDescription__ from
+# the generated _locales. Must stay flat top-level keys named exactly like this.
+extName: Reverse Image Search Anywhere
+extDescription: Reverse image search across Google Lens, Yandex, Bing & TinEye in one right-click. Works on Instagram & Pinterest. Search a face.
+
+# Shared (used in more than one entrypoint)
+cancel: Cancel
+search_this_face: Search this face
+
+# Popup
+popup_heading: Reverse Image Search Anywhere
+popup_hint_html: Right-click any image → <b>Reverse image search</b>.
+popup_capture: Capture region
+popup_paste: Paste an image — ⌘/Ctrl + V
+popup_engines_title: Engines
+popup_engines_sub: (toggle to enable)
+popup_open_background: Open “All engines” tabs in the background
+popup_footer: Captured / pasted / face images upload privately and search across every enabled engine
+popup_badge_private: Private
+status_no_clipboard_image: No image found in the clipboard.
+status_reload: Reload this page, then try $1 again.
+
+# Engine notes — shown in the popup engine list
+engine_note_google: Similar images, products, general
+engine_note_bing: General + good OCR
+engine_note_yandex: Best for faces / people
+engine_note_tineye: Exact matches / where it first appeared
+
+# Background: context menu + reload badge
+menu_all_engines: All engines
+menu_all_engines_upload: All engines (upload — Instagram/Pinterest)
+menu_face: 🔍 Search this face…
+menu_capture: Capture region to search
+action_reload_title: Reload this page to use Reverse Image Search
+
+# Content: capture / crop hints + toasts
+content_toast_no_image_here: No image found there — try “Capture region”.
+content_toast_unreadable: Couldn’t read this image — try “Capture region”.
+capture_hint_face: Drag a box around the face · Esc to cancel
+capture_hint_area: Drag to select an area · Esc to cancel
+crop_instruction: Drag a box around the face, then Search.
+
+# Content: face-search ethics gate — HUMAN-REVIEW-GATED copy
+ethics_line: For verifying people, sources & authenticity — not stalking or harassment. Follow local law.
+ethics_pill: Responsible use
+ethics_body1_html: Face search is powerful. Use it to <b>reunite sources, verify authenticity, and spot fakes or impersonation</b>.
+ethics_body2_html: Do <b>not</b> use it to stalk, harass, or identify people without a legitimate reason. You are responsible for complying with your local laws.
+i_understand: I understand

@@ -2,11 +2,13 @@ import { defineConfig } from 'wxt';
 
 // WXT config — https://wxt.dev
 export default defineConfig({
+  modules: ['@wxt-dev/i18n/module'],
   manifest: {
-    // Name + description mirror the Chrome Web Store listing copy (docs/STORE-LISTING.md §1).
-    name: 'Reverse Image Search Anywhere',
-    description:
-      'Reverse image search across Google Lens, Yandex, Bing & TinEye in one right-click. Works on Instagram & Pinterest. Search a face.',
+    // Name + description localize via _locales (keys extName/extDescription in
+    // locales/<lang>.yml). English values live in locales/en.yml.
+    name: '__MSG_extName__',
+    description: '__MSG_extDescription__',
+    default_locale: 'en',
     // Minimal set. captureVisibleTab is satisfied by <all_urls> + activeTab; opening
     // result tabs, tabs.query for tab.id, and sendMessage need no permission. Removed
     // (unused): 'tabs', 'scripting'. Never needed (impl avoided them): 'offscreen'
