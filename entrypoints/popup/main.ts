@@ -43,7 +43,8 @@ async function renderEngines() {
     icon.onerror = () => (icon.style.display = 'none');
 
     const label = document.createElement('span');
-    const note = i18n.t(ENGINE_NOTE_KEY[id as keyof typeof ENGINE_NOTE_KEY]);
+    const noteKey = ENGINE_NOTE_KEY[id as keyof typeof ENGINE_NOTE_KEY];
+    const note = noteKey ? i18n.t(noteKey) : '';
     label.innerHTML = `<b>${e.name}</b> <span class="sub">${note}</span>`;
 
     li.append(cb, icon, label);

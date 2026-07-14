@@ -6,8 +6,6 @@
 export interface Engine {
   id: string;
   name: string;
-  /** Best-at hint, shown in UI. */
-  note?: string;
   /** Build a results URL from a PUBLICLY FETCHABLE image URL. */
   byUrl: (imageUrl: string) => string;
 }
@@ -18,13 +16,11 @@ export const ENGINES: Record<string, Engine> = {
   google: {
     id: 'google',
     name: 'Google Lens',
-    note: 'Similar images, products, general',
     byUrl: (u) => `https://lens.google.com/uploadbyurl?url=${enc(u)}`,
   },
   bing: {
     id: 'bing',
     name: 'Bing Visual',
-    note: 'General + good OCR',
     // The old `search?q=imgurl:…&iss=sbi` syntax now bounces to Bing's drop-image
     // landing (FORM=SBIRDI). The `searchbyimage` endpoint with `cbir=sbi&imgurl=`
     // still returns results. Verified 2026-07.
@@ -33,13 +29,11 @@ export const ENGINES: Record<string, Engine> = {
   yandex: {
     id: 'yandex',
     name: 'Yandex',
-    note: 'Best for faces / people',
     byUrl: (u) => `https://yandex.com/images/search?rpt=imageview&url=${enc(u)}`,
   },
   tineye: {
     id: 'tineye',
     name: 'TinEye',
-    note: 'Exact matches / where it first appeared',
     byUrl: (u) => `https://tineye.com/search?url=${enc(u)}`,
   },
 };
