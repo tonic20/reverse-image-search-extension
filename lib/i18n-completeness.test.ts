@@ -87,3 +87,11 @@ describe.each(['en', ...otherLocales])('locale %s popup hint', (locale) => {
     expect(msgs.popup_hint_html).toContain(`<b>${msgs.extName}</b>`);
   });
 });
+
+describe('Russian face-search label', () => {
+  const ru = load('ru');
+  it('uses the natural noun phrase in compact UI actions', () => {
+    expect(ru.search_this_face).toBe('Поиск по лицу');
+    expect(ru.menu_face).toBe('🔍 Поиск по лицу…');
+  });
+});

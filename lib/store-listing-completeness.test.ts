@@ -25,3 +25,11 @@ describe.each(LOCALES)('store-listing.%s.md', (loc) => {
     for (const h of REQUIRED) expect(body, h).toContain(h);
   });
 });
+
+describe('Russian face-search terminology', () => {
+  const body = readFileSync(path.join(DOCS, 'store-listing.ru.md'), 'utf8');
+  it('uses the natural product label', () => {
+    expect(body).toContain('«Поиск по лицу»');
+    expect(body).not.toContain('«Искать это лицо»');
+  });
+});

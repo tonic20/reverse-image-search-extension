@@ -5,7 +5,7 @@ extDescription: Обратный поиск изображений через Go
 
 # Shared (used in more than one entrypoint)
 cancel: Отмена
-search_this_face: Искать это лицо
+search_this_face: Поиск по лицу
 
 # Popup
 popup_heading: Reverse Image Search Anywhere
@@ -29,7 +29,7 @@ engine_note_tineye: Точные совпадения / где оно вперв
 # Background: context menu + reload badge
 menu_all_engines: Все поисковые системы
 menu_all_engines_upload: Все поисковые системы (загрузка — Instagram/Pinterest)
-menu_face: '🔍 Искать это лицо…'
+menu_face: '🔍 Поиск по лицу…'
 menu_capture: Захватить область для поиска
 action_reload_title: Перезагрузите эту страницу, чтобы использовать обратный поиск изображений
 
