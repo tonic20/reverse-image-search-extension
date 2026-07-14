@@ -2,6 +2,7 @@ import { browser } from 'wxt/browser';
 import { engineList, FACE_ENGINE_ORDER } from '../lib/engines';
 import { getSettings } from '../lib/settings';
 import { MSG } from '../lib/messages';
+import { i18n } from '#i18n';
 import {
   openUrlSearches,
   searchImageByUpload,
@@ -101,12 +102,12 @@ function safeAction(p: Promise<unknown>) {
 function hintReloadNeeded(tabId: number) {
   safeAction(browser.action.setBadgeText({ tabId, text: '↻' }));
   safeAction(browser.action.setBadgeBackgroundColor({ tabId, color: '#4f46e5' }));
-  safeAction(browser.action.setTitle({ tabId, title: 'Reload this page to use Reverse Image Search' }));
+  safeAction(browser.action.setTitle({ tabId, title: i18n.t('action_reload_title') }));
 }
 
 function clearHint(tabId: number) {
   safeAction(browser.action.setBadgeText({ tabId, text: '' }));
-  safeAction(browser.action.setTitle({ tabId, title: 'Reverse Image Search Anywhere' }));
+  safeAction(browser.action.setTitle({ tabId, title: i18n.t('extName') }));
 }
 
 async function rebuildMenus() {
@@ -124,24 +125,24 @@ async function rebuildMenus() {
   }
   browser.contextMenus.create({ id: 'sep', type: 'separator', contexts: ['page', 'image'] });
 
-  browser.contextMenus.create({ id: ALL_ID, title: 'All engines', contexts: ['page', 'image'] });
+  browser.contextMenus.create({ id: ALL_ID, title: i18n.t('menu_all_engines'), contexts: ['page', 'image'] });
   // Byte-grab path for images the redirect method can't reach (Instagram,
   // Pinterest, hotlink-protected CDNs, blob:/data:).
   browser.contextMenus.create({
     id: UPLOAD_ID,
-    title: 'All engines (upload — Instagram/Pinterest)',
+    title: i18n.t('menu_all_engines_upload'),
     contexts: ['page', 'image'],
   });
 
   browser.contextMenus.create({ id: 'sep2', type: 'separator', contexts: ['page', 'image'] });
   // Face-search flow: crop-assist → Yandex-first engine order.
-  browser.contextMenus.create({ id: FACE_ID, title: '🔍 Search this face…', contexts: ['page', 'image'] });
+  browser.contextMenus.create({ id: FACE_ID, title: i18n.t('menu_face'), contexts: ['page', 'image'] });
 
   // Anywhere on the page: capture a region to search (for images with no usable
   // URL, or to search just part of the page).
   browser.contextMenus.create({
     id: CAPTURE_ID,
-    title: 'Capture region to search',
+    title: i18n.t('menu_capture'),
     contexts: ['page', 'image', 'selection'],
   });
 }
