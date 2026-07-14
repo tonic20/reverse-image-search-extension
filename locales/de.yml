@@ -9,7 +9,7 @@ search_this_face: Dieses Gesicht suchen
 
 # Popup
 popup_heading: Reverse Image Search Anywhere
-popup_hint_html: Rechtsklick auf ein beliebiges Bild → <b>Bilder-Rückwärtssuche</b>.
+popup_hint_html: Rechtsklick auf ein beliebiges Bild → <b>Reverse Image Search Anywhere</b>.
 popup_capture: Bereich erfassen
 popup_paste: Bild einfügen — ⌘/Ctrl + V
 popup_engines_title: Suchmaschinen

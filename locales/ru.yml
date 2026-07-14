@@ -9,7 +9,7 @@ search_this_face: Искать это лицо
 
 # Popup
 popup_heading: Reverse Image Search Anywhere
-popup_hint_html: Щёлкните правой кнопкой мыши по любому изображению → <b>обратный поиск изображений</b>.
+popup_hint_html: Щёлкните правой кнопкой мыши по любому изображению → <b>Reverse Image Search Anywhere</b>.
 popup_capture: Захватить область
 popup_paste: Вставьте изображение — ⌘/Ctrl + V
 popup_engines_title: Поисковые системы

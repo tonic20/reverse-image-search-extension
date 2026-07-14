@@ -47,6 +47,9 @@ describe('popup data-i18n keys', () => {
   it('finds data-i18n attributes in the popup', () => {
     expect(keys.length).toBeGreaterThan(0);
   });
+  it('uses the extension name in the popup fallback hint', () => {
+    expect(html).toContain('<b>Reverse Image Search Anywhere</b>');
+  });
   it.each(keys)('key "%s" is defined in en.yml', (key) => {
     expect(en[key]?.trim()).toBeTruthy();
   });

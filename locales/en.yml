@@ -9,7 +9,7 @@ search_this_face: Search this face
 
 # Popup
 popup_heading: Reverse Image Search Anywhere
-popup_hint_html: Right-click any image → <b>Reverse image search</b>.
+popup_hint_html: Right-click any image → <b>Reverse Image Search Anywhere</b>.
 popup_capture: Capture region
 popup_paste: Paste an image — ⌘/Ctrl + V
 popup_engines_title: Engines

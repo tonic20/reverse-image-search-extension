@@ -80,3 +80,10 @@ describe.each(['en', ...otherLocales])('locale %s manifest description', (locale
     expect([...value].length).toBeLessThanOrEqual(MANIFEST_DESCRIPTION_MAX);
   });
 });
+
+describe.each(['en', ...otherLocales])('locale %s popup hint', (locale) => {
+  const msgs = locale === 'en' ? en : load(locale);
+  it('names the manifest-backed context menu parent exactly', () => {
+    expect(msgs.popup_hint_html).toContain(`<b>${msgs.extName}</b>`);
+  });
+});

@@ -9,7 +9,7 @@ search_this_face: この顔を検索
 
 # Popup
 popup_heading: Reverse Image Search Anywhere
-popup_hint_html: 画像を右クリック→<b>逆画像検索</b>。
+popup_hint_html: 画像を右クリック→<b>Reverse Image Search Anywhere</b>。
 popup_capture: 範囲をキャプチャ
 popup_paste: 画像を貼り付け — ⌘/Ctrl + V
 popup_engines_title: エンジン

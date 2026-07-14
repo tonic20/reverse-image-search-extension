@@ -9,7 +9,7 @@ search_this_face: Buscar este rostro
 
 # Popup
 popup_heading: Reverse Image Search Anywhere
-popup_hint_html: Haz clic derecho en cualquier imagen → <b>Búsqueda inversa de imágenes</b>.
+popup_hint_html: Haz clic derecho en cualquier imagen → <b>Reverse Image Search Anywhere</b>.
 popup_capture: Capturar región
 popup_paste: Pega una imagen — ⌘/Ctrl + V
 popup_engines_title: Motores
