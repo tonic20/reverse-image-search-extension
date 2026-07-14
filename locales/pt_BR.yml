@@ -1,7 +1,7 @@
 # Manifest — Chrome substitutes __MSG_extName__ / __MSG_extDescription__ from
 # the generated _locales. Must stay flat top-level keys named exactly like this.
 extName: Reverse Image Search Anywhere
-extDescription: Busca reversa de imagens no Google Lens, Yandex, Bing e TinEye com um clique direito. Funciona no Instagram e no Pinterest. Busque um rosto.
+extDescription: Busca reversa de imagens no Google Lens, Yandex, Bing e TinEye num clique. Funciona no Instagram e no Pinterest. Busque um rosto.
 
 # Shared (used in more than one entrypoint)
 cancel: Cancelar
