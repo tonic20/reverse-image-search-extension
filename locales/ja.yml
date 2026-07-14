@@ -1,0 +1,48 @@
+# Manifest — Chrome substitutes __MSG_extName__ / __MSG_extDescription__ from
+# the generated _locales. Must stay flat top-level keys named exactly like this.
+extName: Reverse Image Search Anywhere
+extDescription: Google Lens・Yandex・Bing・TinEyeでの画像検索を右クリック1回で。Instagram・Pinterestにも対応。顔検索も可能。
+
+# Shared (used in more than one entrypoint)
+cancel: キャンセル
+search_this_face: この顔を検索
+
+# Popup
+popup_heading: Reverse Image Search Anywhere
+popup_hint_html: 画像を右クリック→<b>逆画像検索</b>。
+popup_capture: 範囲をキャプチャ
+popup_paste: 画像を貼り付け — ⌘/Ctrl + V
+popup_engines_title: エンジン
+popup_engines_sub: (オンで有効化)
+popup_open_background: 「すべてのエンジン」タブをバックグラウンドで開く
+popup_footer: キャプチャ・貼り付け・顔の画像はプライベートにアップロードされ、有効になっているすべてのエンジンで検索されます
+popup_badge_private: プライベート
+status_no_clipboard_image: クリップボードに画像が見つかりません。
+status_reload: このページを再読み込みしてから、もう一度 $1 をお試しください。
+
+# Engine notes — shown in the popup engine list
+engine_note_google: 類似画像・商品・全般的な検索
+engine_note_bing: 全般的な検索 + 高精度なOCR
+engine_note_yandex: 顔・人物の検索に最適
+engine_note_tineye: 完全一致・最初に登場した場所
+
+# Background: context menu + reload badge
+menu_all_engines: すべてのエンジン
+menu_all_engines_upload: すべてのエンジン(アップロード — Instagram/Pinterest)
+menu_face: '🔍 この顔を検索…'
+menu_capture: 範囲をキャプチャして検索
+action_reload_title: 逆画像検索を使うにはこのページを再読み込みしてください
+
+# Content: capture / crop hints + toasts
+content_toast_no_image_here: ここに画像が見つかりません。「範囲をキャプチャ」を試してください。
+content_toast_unreadable: この画像を読み込めませんでした。「範囲をキャプチャ」を試してください。
+capture_hint_face: 顔の周りをドラッグして囲む · Escでキャンセル
+capture_hint_area: ドラッグして範囲を選択 · Escでキャンセル
+crop_instruction: 顔の周りをドラッグして囲み、検索してください。
+
+# Content: face-search ethics gate — HUMAN-REVIEW-GATED copy
+ethics_line: 人物、情報源、真正性を確認するためのものであり、ストーキングや嫌がらせのためではありません。現地の法律に従ってください。
+ethics_pill: 責任ある利用
+ethics_body1_html: 顔検索は強力な機能です。<b>情報源をたどり、真正性を確認し、偽物やなりすましを見つける</b>ために活用してください。
+ethics_body2_html: ストーキングや嫌がらせ、正当な理由のない身元特定には<b>使用しないで</b>ください。現地のすべての法律を遵守する責任は利用者にあります。
+i_understand: 理解しました

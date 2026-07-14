@@ -1,0 +1,48 @@
+# Manifest — Chrome substitutes __MSG_extName__ / __MSG_extDescription__ from
+# the generated _locales. Must stay flat top-level keys named exactly like this.
+extName: Reverse Image Search Anywhere
+extDescription: Bilder-Rückwärtssuche auf Google Lens, Yandex, Bing und TinEye per Rechtsklick. Funktioniert mit Instagram und Pinterest. Sucht auch nach Gesichtern.
+
+# Shared (used in more than one entrypoint)
+cancel: Abbrechen
+search_this_face: Dieses Gesicht suchen
+
+# Popup
+popup_heading: Reverse Image Search Anywhere
+popup_hint_html: Rechtsklick auf ein beliebiges Bild → <b>Bilder-Rückwärtssuche</b>.
+popup_capture: Bereich erfassen
+popup_paste: Bild einfügen — ⌘/Ctrl + V
+popup_engines_title: Suchmaschinen
+popup_engines_sub: (zum Aktivieren umschalten)
+popup_open_background: „Alle Suchmaschinen“-Tabs im Hintergrund öffnen
+popup_footer: Erfasste, eingefügte oder Gesichtsbilder werden privat hochgeladen und über alle aktivierten Suchmaschinen durchsucht
+popup_badge_private: Privat
+status_no_clipboard_image: Kein Bild in der Zwischenablage gefunden.
+status_reload: Laden Sie diese Seite neu und versuchen Sie $1 danach erneut.
+
+# Engine notes — shown in the popup engine list
+engine_note_google: Ähnliche Bilder, Produkte, Allgemeines
+engine_note_bing: Allgemein + gute OCR
+engine_note_yandex: Am besten für Gesichter / Personen
+engine_note_tineye: Exakte Treffer / wo es zuerst erschienen ist
+
+# Background: context menu + reload badge
+menu_all_engines: Alle Suchmaschinen
+menu_all_engines_upload: Alle Suchmaschinen (Hochladen — Instagram/Pinterest)
+menu_face: '🔍 Dieses Gesicht suchen…'
+menu_capture: Bereich zum Suchen erfassen
+action_reload_title: Diese Seite neu laden, um die Bilder-Rückwärtssuche zu nutzen
+
+# Content: capture / crop hints + toasts
+content_toast_no_image_here: Kein Bild gefunden — versuchen Sie es mit „Bereich erfassen“.
+content_toast_unreadable: Dieses Bild konnte nicht gelesen werden — versuchen Sie es mit „Bereich erfassen“.
+capture_hint_face: Ziehen Sie einen Rahmen um das Gesicht · Esc zum Abbrechen
+capture_hint_area: Ziehen Sie, um einen Bereich auszuwählen · Esc zum Abbrechen
+crop_instruction: Ziehen Sie einen Rahmen um das Gesicht und klicken Sie dann auf Suchen.
+
+# Content: face-search ethics gate — HUMAN-REVIEW-GATED copy
+ethics_line: Zur Überprüfung von Personen, Quellen und Echtheit — nicht zum Stalken oder Belästigen. Beachten Sie das örtliche Recht.
+ethics_pill: Verantwortungsvolle Nutzung
+ethics_body1_html: Die Gesichtersuche ist sehr leistungsfähig. Nutzen Sie sie, um <b>Quellen zusammenzuführen, die Echtheit zu überprüfen und Fälschungen oder Identitätsbetrug zu erkennen</b>.
+ethics_body2_html: Verwenden Sie es <b>nicht</b>, um Personen zu stalken, zu belästigen oder ohne legitimen Grund zu identifizieren. Sie sind dafür verantwortlich, die örtlichen Gesetze einzuhalten.
+i_understand: Verstanden

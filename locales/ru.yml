@@ -1,0 +1,48 @@
+# Manifest — Chrome substitutes __MSG_extName__ / __MSG_extDescription__ from
+# the generated _locales. Must stay flat top-level keys named exactly like this.
+extName: Reverse Image Search Anywhere
+extDescription: Обратный поиск изображений через Google Lens, Yandex, Bing и TinEye одним кликом правой кнопкой мыши. Работает в Instagram и Pinterest. Есть поиск по лицу.
+
+# Shared (used in more than one entrypoint)
+cancel: Отмена
+search_this_face: Искать это лицо
+
+# Popup
+popup_heading: Reverse Image Search Anywhere
+popup_hint_html: Щёлкните правой кнопкой мыши по любому изображению → <b>обратный поиск изображений</b>.
+popup_capture: Захватить область
+popup_paste: Вставьте изображение — ⌘/Ctrl + V
+popup_engines_title: Поисковые системы
+popup_engines_sub: (переключите, чтобы включить)
+popup_open_background: Открывать вкладки «Все поисковые системы» в фоновом режиме
+popup_footer: Захваченные, вставленные или изображения лица загружаются приватно и ищутся во всех включённых системах
+popup_badge_private: Приватно
+status_no_clipboard_image: Изображение в буфере обмена не найдено.
+status_reload: Перезагрузите страницу и попробуйте $1 ещё раз.
+
+# Engine notes — shown in the popup engine list
+engine_note_google: Похожие изображения, товары, общее
+engine_note_bing: Общее + хороший OCR
+engine_note_yandex: Лучше всего для лиц / людей
+engine_note_tineye: Точные совпадения / где оно впервые появилось
+
+# Background: context menu + reload badge
+menu_all_engines: Все поисковые системы
+menu_all_engines_upload: Все поисковые системы (загрузка — Instagram/Pinterest)
+menu_face: '🔍 Искать это лицо…'
+menu_capture: Захватить область для поиска
+action_reload_title: Перезагрузите эту страницу, чтобы использовать обратный поиск изображений
+
+# Content: capture / crop hints + toasts
+content_toast_no_image_here: Изображение здесь не найдено — попробуйте «Захватить область».
+content_toast_unreadable: Не удалось прочитать это изображение — попробуйте «Захватить область».
+capture_hint_face: Обведите лицо рамкой · Esc для отмены
+capture_hint_area: Перетащите, чтобы выделить область · Esc для отмены
+crop_instruction: Обведите лицо рамкой, затем нажмите «Искать».
+
+# Content: face-search ethics gate — HUMAN-REVIEW-GATED copy
+ethics_line: Для проверки людей, источников и подлинности — не для слежки или преследования. Соблюдайте местный закон.
+ethics_pill: Ответственное использование
+ethics_body1_html: Поиск по лицу — мощный инструмент. Используйте его, чтобы <b>находить источники, проверять подлинность и выявлять подделки или выдачу себя за другого человека</b>.
+ethics_body2_html: <b>Не</b> используйте его для слежки, преследования или установления личности людей без законных оснований. Вы несёте ответственность за соблюдение местных законов.
+i_understand: Понятно
