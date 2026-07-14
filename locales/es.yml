@@ -1,0 +1,48 @@
+# Manifest — Chrome substitutes __MSG_extName__ / __MSG_extDescription__ from
+# the generated _locales. Must stay flat top-level keys named exactly like this.
+extName: Reverse Image Search Anywhere
+extDescription: Búsqueda inversa de imágenes en Google Lens, Yandex, Bing y TinEye con un clic derecho. Funciona en Instagram y Pinterest. Busca un rostro.
+
+# Shared (used in more than one entrypoint)
+cancel: Cancelar
+search_this_face: Buscar este rostro
+
+# Popup
+popup_heading: Reverse Image Search Anywhere
+popup_hint_html: Haz clic derecho en cualquier imagen → <b>Búsqueda inversa de imágenes</b>.
+popup_capture: Capturar región
+popup_paste: Pega una imagen — ⌘/Ctrl + V
+popup_engines_title: Motores
+popup_engines_sub: (activa para habilitar)
+popup_open_background: Abrir las pestañas de “Todos los motores” en segundo plano
+popup_footer: Las imágenes capturadas, pegadas o de rostro se suben de forma privada y se buscan en todos los motores habilitados
+popup_badge_private: Privado
+status_no_clipboard_image: No se encontró ninguna imagen en el portapapeles.
+status_reload: Vuelve a cargar esta página y prueba $1 de nuevo.
+
+# Engine notes — shown in the popup engine list
+engine_note_google: Imágenes similares, productos, general
+engine_note_bing: General + buen OCR
+engine_note_yandex: Ideal para rostros / personas
+engine_note_tineye: Coincidencias exactas / dónde apareció por primera vez
+
+# Background: context menu + reload badge
+menu_all_engines: Todos los motores
+menu_all_engines_upload: Todos los motores (subir — Instagram/Pinterest)
+menu_face: '🔍 Buscar este rostro…'
+menu_capture: Capturar región para buscar
+action_reload_title: Vuelve a cargar esta página para usar la búsqueda inversa de imágenes
+
+# Content: capture / crop hints + toasts
+content_toast_no_image_here: No se encontró ninguna imagen ahí — prueba “Capturar región”.
+content_toast_unreadable: No se pudo leer esta imagen — prueba “Capturar región”.
+capture_hint_face: Arrastra un recuadro alrededor del rostro · Esc para cancelar
+capture_hint_area: Arrastra para seleccionar un área · Esc para cancelar
+crop_instruction: Arrastra un recuadro alrededor del rostro y luego busca.
+
+# Content: face-search ethics gate — HUMAN-REVIEW-GATED copy
+ethics_line: Para verificar personas, fuentes y autenticidad — no para acechar ni acosar. Cumple la ley local.
+ethics_pill: Uso responsable
+ethics_body1_html: La búsqueda de rostros es poderosa. Úsala para <b>reunir fuentes, verificar la autenticidad y detectar falsificaciones o suplantaciones</b>.
+ethics_body2_html: <b>No</b> lo uses para acechar, acosar ni identificar a personas sin un motivo legítimo. Eres responsable de cumplir las leyes locales.
+i_understand: Entendido
