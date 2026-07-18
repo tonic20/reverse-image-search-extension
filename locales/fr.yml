@@ -46,3 +46,10 @@ ethics_pill: Usage responsable
 ethics_body1_html: La recherche de visage est puissante. Utilise-la pour <b>retrouver des sources, vérifier l’authenticité et repérer les faux ou les usurpations</b>.
 ethics_body2_html: Ne l’utilise <b>pas</b> pour traquer, harceler ou identifier des personnes sans motif légitime. Tu es responsable du respect des lois locales.
 i_understand: J’ai compris
+
+# Review prompt (popup)
+review_prompt_title: Vous aimez Reverse Image Search Anywhere ?
+review_prompt_body: Votre avis aide d’autres personnes à le découvrir.
+review_prompt_review: Laisser un avis
+review_prompt_later: Plus tard
+review_prompt_feedback: Envoyer un commentaire

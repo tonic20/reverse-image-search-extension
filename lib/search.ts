@@ -2,6 +2,7 @@ import { browser } from 'wxt/browser';
 import { ENGINES } from './engines';
 import { getSettings } from './settings';
 import { API_BASE } from './config';
+import { recordSuccessfulSearch } from './review-prompt-actions';
 
 /** Image already has a public URL → open each engine's results. */
 export function openUrlSearches(
@@ -17,6 +18,11 @@ export function openUrlSearches(
       active: i === 0 ? true : !openInBackground,
     });
   });
+  // One successful search action (regardless of how many engine tabs opened).
+  // This is the single choke point: direct URL searches call it here, and
+  // successful blob/upload searches reach it via searchImageBlob's success path.
+  // Failed uploads open a fallback tab WITHOUT calling this, so they don't count.
+  void recordSuccessfulSearch();
 }
 
 /**

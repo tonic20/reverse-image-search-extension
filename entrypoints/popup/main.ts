@@ -4,6 +4,8 @@ import { ENGINES, DEFAULT_ENGINE_ORDER } from '../../lib/engines';
 import { getSettings, setSettings } from '../../lib/settings';
 import { MSG } from '../../lib/messages';
 import { localizeDom } from '../../lib/dom-i18n';
+import { shouldPrompt } from '../../lib/review-prompt';
+import { getState, markPromptShown, onReview, onFeedback, onLater } from '../../lib/review-prompt-actions';
 
 const ENGINE_NOTE_KEY = {
   google: 'engine_note_google',
@@ -99,8 +101,31 @@ function fileToDataUrl(file: Blob): Promise<string> {
   });
 }
 
+async function maybeShowReviewPrompt() {
+  const state = await getState();
+  if (!shouldPrompt(state, Date.now())) return;
+  // Stamp on render: closing the popup without choosing also defers 90 days.
+  await markPromptShown(Date.now());
+
+  const card = document.getElementById('review-prompt')!;
+  card.hidden = false;
+  document.getElementById('rp-review')!.addEventListener('click', async () => {
+    await onReview();
+    card.hidden = true;
+  });
+  document.getElementById('rp-feedback')!.addEventListener('click', async () => {
+    await onFeedback();
+    card.hidden = true;
+  });
+  document.getElementById('rp-later')!.addEventListener('click', () => {
+    onLater();
+    card.hidden = true;
+  });
+}
+
 document.getElementById('capture')!.addEventListener('click', startCapture);
 document.getElementById('face')!.addEventListener('click', startFaceCapture);
 document.addEventListener('paste', onPaste);
 localizeDom(document, (key) => i18n.t(key as Parameters<typeof i18n.t>[0]));
 renderEngines();
+void maybeShowReviewPrompt();

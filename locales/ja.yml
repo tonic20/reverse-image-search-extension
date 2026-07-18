@@ -46,3 +46,10 @@ ethics_pill: 責任ある利用
 ethics_body1_html: 顔検索は強力な機能です。<b>情報源をたどり、真正性を確認し、偽物やなりすましを見つける</b>ために活用してください。
 ethics_body2_html: ストーキングや嫌がらせ、正当な理由のない身元特定には<b>使用しないで</b>ください。現地のすべての法律を遵守する責任は利用者にあります。
 i_understand: 理解しました
+
+# Review prompt (popup)
+review_prompt_title: Reverse Image Search Anywhere はお役に立っていますか？
+review_prompt_body: フィードバックは、より多くの人に届く助けになります。
+review_prompt_review: レビューを書く
+review_prompt_later: 後で
+review_prompt_feedback: ご意見を送る
