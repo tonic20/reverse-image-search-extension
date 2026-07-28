@@ -24,8 +24,20 @@ export const DEFAULT_STATE: ReviewPromptState = {
 export const THRESHOLD = 3;
 export const DEFER_MS = 90 * 24 * 60 * 60 * 1000;
 
-/** Whether to show the prompt now, given the stored state and current time. */
-export function shouldPrompt(state: ReviewPromptState, now: number): boolean {
+/**
+ * Whether to show the prompt now, given the stored state and current time.
+ *
+ * `canReview` is passed in rather than read here so this module stays free of
+ * browser/build imports (see the file header). It is false on any build whose
+ * store we haven't published to — see ./store-review-url.ts. Without it there
+ * is nowhere to send the user, so asking is worse than staying quiet.
+ */
+export function shouldPrompt(
+  state: ReviewPromptState,
+  now: number,
+  canReview: boolean,
+): boolean {
+  if (!canReview) return false;
   if (state.reviewed) return false;
   if (state.successCount < THRESHOLD) return false;
   if (state.lastPromptAt !== null && now - state.lastPromptAt < DEFER_MS) return false;

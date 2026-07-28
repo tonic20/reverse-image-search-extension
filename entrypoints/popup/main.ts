@@ -6,6 +6,7 @@ import { MSG } from '../../lib/messages';
 import { localizeDom } from '../../lib/dom-i18n';
 import { shouldPrompt } from '../../lib/review-prompt';
 import { getState, markPromptShown, onReview, onFeedback, onLater } from '../../lib/review-prompt-actions';
+import { STORE_REVIEW_URL } from '../../lib/store-review-url';
 
 const ENGINE_NOTE_KEY = {
   google: 'engine_note_google',
@@ -111,7 +112,7 @@ function fileToDataUrl(file: Blob): Promise<string> {
 
 async function maybeShowReviewPrompt() {
   const state = await getState();
-  if (!shouldPrompt(state, Date.now())) return;
+  if (!shouldPrompt(state, Date.now(), STORE_REVIEW_URL !== null)) return;
   // Stamp on render: closing the popup without choosing also defers 90 days.
   await markPromptShown(Date.now());
 
