@@ -36,7 +36,26 @@ export default defineConfig({
           browser_specific_settings: {
             gecko: {
               id: 'reverse-image-search@kopylov.net',
-              strict_min_version: '127.0',
+              // 140, not 127: 127 is the floor at which MV3 host_permissions are
+              // granted at install, but data_collection_permissions below only
+              // exists from FF 140 — under that it is silently ignored and users
+              // see no consent UI. ESR 140 clears this, so the cost is minimal.
+              strict_min_version: '140.0',
+              // Required by AMO for all new extensions since 2025-11-03.
+              // NOT 'none': the upload path (sites that hide the image URL) and
+              // region capture send image bytes to our S3 backend, and every
+              // search hands the image or its URL to a third-party engine. That
+              // image is page content, hence 'websiteContent'.
+              // Deliberately NOT declared: no analytics/telemetry ships in the
+              // extension, so 'technicalAndInteraction' does not apply; engine
+              // prefs live in browser sync storage and never reach us.
+              data_collection_permissions: {
+                required: ['websiteContent'],
+              },
+            },
+            // Android got data_collection_permissions two releases later (142).
+            gecko_android: {
+              strict_min_version: '142.0',
             },
           },
         }

@@ -47,7 +47,15 @@ async function renderEngines() {
     const label = document.createElement('span');
     const noteKey = ENGINE_NOTE_KEY[id as keyof typeof ENGINE_NOTE_KEY];
     const note = noteKey ? i18n.t(noteKey) : '';
-    label.innerHTML = `<b>${e.name}</b> <span class="sub">${note}</span>`;
+    // Built with DOM APIs rather than innerHTML: AMO's linter flags the
+    // interpolated form, and it would become a real injection point the moment
+    // engine names stop being first-party constants.
+    const strong = document.createElement('b');
+    strong.textContent = e.name;
+    const sub = document.createElement('span');
+    sub.className = 'sub';
+    sub.textContent = note;
+    label.append(strong, ' ', sub);
 
     li.append(cb, icon, label);
     list.append(li);
