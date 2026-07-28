@@ -17,11 +17,15 @@
 const CHROME_REVIEW_URL =
   'https://chromewebstore.google.com/detail/jmfdmdfnhkgbnpnpignhjcokpllbnhpp/reviews';
 
+// No /en-US/ prefix on purpose: AMO redirects a locale-less URL to the
+// visitor's own locale, so a German user lands on the German listing rather
+// than the English one. The slug is the same one in the developer edit URL.
+const FIREFOX_REVIEW_URL =
+  'https://addons.mozilla.org/firefox/addon/reverse-image-search-anywhere/reviews/';
+
 export const REVIEW_URLS: Readonly<Record<string, string>> = {
   chrome: CHROME_REVIEW_URL,
-  // firefox: 'https://addons.mozilla.org/firefox/addon/<slug>/reviews/'
-  //   Pending — AMO assigns the slug at submission. Until then the prompt stays
-  //   suppressed on Firefox.
+  firefox: FIREFOX_REVIEW_URL,
   // edge:    'https://microsoftedge.microsoft.com/addons/detail/<id>' — not submitted yet.
   // opera:   'https://addons.opera.com/en/extensions/details/<slug>/' — not submitted yet.
 };
@@ -48,4 +52,8 @@ export function reviewUrlFor(browser: string | undefined): string | null {
  *
  * Add a store here and to REVIEW_URLS together when its listing goes live.
  */
-export const STORE_REVIEW_URL: string | null = import.meta.env.CHROME ? CHROME_REVIEW_URL : null;
+export const STORE_REVIEW_URL: string | null = import.meta.env.CHROME
+  ? CHROME_REVIEW_URL
+  : import.meta.env.FIREFOX
+    ? FIREFOX_REVIEW_URL
+    : null;

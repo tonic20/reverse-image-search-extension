@@ -14,9 +14,21 @@ describe('reviewUrlFor', () => {
     );
   });
 
+  it('returns the AMO reviews page for firefox', () => {
+    expect(reviewUrlFor('firefox')).toBe(
+      'https://addons.mozilla.org/firefox/addon/reverse-image-search-anywhere/reviews/',
+    );
+  });
+
+  // No locale prefix: AMO redirects to the visitor's own locale, which matters
+  // for a seven-locale extension. An /en-US/ URL would pin everyone to English.
+  it('firefox URL carries no hardcoded locale prefix', () => {
+    expect(reviewUrlFor('firefox')).not.toMatch(/\/[a-z]{2}-[A-Z]{2}\//);
+  });
+
   // Each becomes a real URL only once that listing is published. Deleting a
   // case here without adding the URL would silently re-point users at Chrome.
-  it.each(['firefox', 'edge', 'opera'])('returns null for unpublished store %s', (target) => {
+  it.each(['edge', 'opera'])('returns null for unpublished store %s', (target) => {
     expect(reviewUrlFor(target)).toBeNull();
   });
 
