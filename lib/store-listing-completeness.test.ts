@@ -16,13 +16,47 @@ import path from 'node:path';
 const DOCS = path.join(import.meta.dirname, '../../docs/i18n/');
 const LOCALES = ['es', 'pt_BR', 'fr', 'de', 'ru', 'ja'];
 const REQUIRED = ['## Name', '## Summary', '## Detailed description', '## Single-purpose', '## Permission justifications'];
+/** AMO needs its own summary (250 chars, not 132) and markdown description. */
+const REQUIRED_AMO = ['## AMO Summary', '## AMO Detailed description'];
+const AMO_SUMMARY_MAX = 250;
+
+/** First fenced block after a heading — the copy-paste payload. */
+function blockAfter(body: string, heading: string): string {
+  const rest = body.split(heading)[1] ?? '';
+  return (rest.split('```')[1] ?? '').trim();
+}
 
 describe.each(LOCALES)('store-listing.%s.md', (loc) => {
   const filePath = path.join(DOCS, `store-listing.${loc}.md`);
   it('exists', () => expect(existsSync(filePath)).toBe(true));
   it('has every required section', () => {
     const body = existsSync(filePath) ? readFileSync(filePath, 'utf8') : '';
-    for (const h of REQUIRED) expect(body, h).toContain(h);
+    for (const h of [...REQUIRED, ...REQUIRED_AMO]) expect(body, h).toContain(h);
+  });
+
+  describe('AMO variant', () => {
+    const body = readFileSync(filePath, 'utf8');
+    const summary = blockAfter(body, '## AMO Summary');
+    const description = blockAfter(body, '## AMO Detailed description');
+
+    it(`summary is within AMO's ${AMO_SUMMARY_MAX}-char cap`, () => {
+      expect(summary.length).toBeGreaterThan(0);
+      expect(summary.length).toBeLessThanOrEqual(AMO_SUMMARY_MAX);
+    });
+
+    // The three defects that made the CWS body unusable on AMO. Each one
+    // shipped in all six locales before this guard existed.
+    it('description uses markdown headings, not the CWS ▍ glyph', () => {
+      expect(description).not.toContain('▍');
+      expect(description).toContain('**');
+    });
+    it('description escapes <canvas> so AMO’s sanitizer cannot strip it', () => {
+      expect(description).not.toMatch(/(?<!`)<canvas>/);
+    });
+    it('description does not claim stores we have not shipped to', () => {
+      const closing = description.split('\n').filter(Boolean).at(-1)!;
+      for (const store of ['Edge', 'Opera']) expect(closing).not.toContain(store);
+    });
   });
 });
 
