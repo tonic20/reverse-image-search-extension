@@ -53,6 +53,13 @@ describe.each(LOCALES)('store-listing.%s.md', (loc) => {
     it('description escapes <canvas> so AMO’s sanitizer cannot strip it', () => {
       expect(description).not.toMatch(/(?<!`)<canvas>/);
     });
+    // The CWS body needs the same tag gone for a different reason: CWS renders
+    // plain text, so a raw <canvas> shows literally to users and backticks
+    // would too — hence "canvas element" in prose there, not code formatting.
+    it('CWS body carries no raw <canvas> either', () => {
+      const cws = blockAfter(body, '## Detailed description');
+      expect(cws).not.toMatch(/<canvas>/);
+    });
     it('description does not claim stores we have not shipped to', () => {
       const closing = description.split('\n').filter(Boolean).at(-1)!;
       for (const store of ['Edge', 'Opera']) expect(closing).not.toContain(store);
