@@ -42,7 +42,13 @@ describe.skipIf(!HAS_DOCS).each(LOCALES)('store-listing.%s.md', (loc) => {
   });
 
   describe('AMO variant', () => {
-    const body = readFileSync(filePath, 'utf8');
+    // `describe.skipIf` on the outer suite (and Vitest's cascading skip in
+    // general) only skips `it` callbacks -- it does not stop the `describe`
+    // factory itself from running at collection time. So this read, sitting
+    // directly in a describe body, must guard itself too, even though its
+    // sibling `it`s below are already skipped as descendants of the outer
+    // `describe.skipIf(!HAS_DOCS)`.
+    const body = HAS_DOCS ? readFileSync(filePath, 'utf8') : '';
     const summary = blockAfter(body, '## AMO Summary');
     const description = blockAfter(body, '## AMO Detailed description');
 
@@ -75,7 +81,10 @@ describe.skipIf(!HAS_DOCS).each(LOCALES)('store-listing.%s.md', (loc) => {
 });
 
 describe.skipIf(!HAS_DOCS)('Russian face-search terminology', () => {
-  const body = readFileSync(path.join(DOCS, 'store-listing.ru.md'), 'utf8');
+  // Same collection-time caveat as the AMO variant block above: this read is
+  // directly in the describe body, so `skipIf` on this very describe does not
+  // protect it -- only its child `it` (guarded by that skipIf) is skipped.
+  const body = HAS_DOCS ? readFileSync(path.join(DOCS, 'store-listing.ru.md'), 'utf8') : '';
   it('uses the natural product label', () => {
     expect(body).toContain('«Поиск по лицу»');
     expect(body).not.toContain('«Искать это лицо»');
