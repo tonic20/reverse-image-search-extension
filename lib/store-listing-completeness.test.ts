@@ -14,6 +14,13 @@ import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 
 const DOCS = path.join(import.meta.dirname, '../../docs/i18n/');
+// docs/ is private and does not exist in the public mirror
+// (github.com/tonic20/reverse-image-search-extension), a subtree split of
+// extension/ alone. Skip rather than fail there. In the monorepo DOCS is
+// always present, so every assertion below runs exactly as before.
+// This must gate the `describe`s, not the `it`s: both suites call
+// readFileSync in a describe body, which runs at collection time.
+const HAS_DOCS = existsSync(DOCS);
 const LOCALES = ['es', 'pt_BR', 'fr', 'de', 'ru', 'ja'];
 const REQUIRED = ['## Name', '## Summary', '## Detailed description', '## Single-purpose', '## Permission justifications'];
 /** AMO needs its own summary (250 chars, not 132) and markdown description. */
@@ -26,7 +33,7 @@ function blockAfter(body: string, heading: string): string {
   return (rest.split('```')[1] ?? '').trim();
 }
 
-describe.each(LOCALES)('store-listing.%s.md', (loc) => {
+describe.skipIf(!HAS_DOCS).each(LOCALES)('store-listing.%s.md', (loc) => {
   const filePath = path.join(DOCS, `store-listing.${loc}.md`);
   it('exists', () => expect(existsSync(filePath)).toBe(true));
   it('has every required section', () => {
@@ -67,7 +74,7 @@ describe.each(LOCALES)('store-listing.%s.md', (loc) => {
   });
 });
 
-describe('Russian face-search terminology', () => {
+describe.skipIf(!HAS_DOCS)('Russian face-search terminology', () => {
   const body = readFileSync(path.join(DOCS, 'store-listing.ru.md'), 'utf8');
   it('uses the natural product label', () => {
     expect(body).toContain('«Поиск по лицу»');

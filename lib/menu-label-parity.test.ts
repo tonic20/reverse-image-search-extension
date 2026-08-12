@@ -10,11 +10,17 @@
 // This pins every public page that references the upload flow to the exact
 // string the extension ships for that locale.
 import { describe, it, expect } from 'vitest';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 
 const ROOT = path.join(import.meta.dirname, '../..');
 const PAGES_DIR = path.join(ROOT, 'backend/app/views/pages');
+// backend/ is private and does not exist in the public mirror, a subtree split
+// of extension/ alone. Skip rather than fail there. Unlike the store-listing
+// suite, this file's outside reads sit in `it` callbacks, so collection is
+// safe and one guard on the top-level describe is enough. shippedLabel() reads
+// ../locales/, which is inside extension/ and must keep working.
+const HAS_PAGES = existsSync(PAGES_DIR);
 
 /** extension locale code → backend view filename infix ('' for English). */
 const LOCALES: Record<string, string> = {
@@ -40,7 +46,7 @@ function shippedLabel(locale: string): string {
   return match[1];
 }
 
-describe.each(Object.entries(LOCALES))('%s public pages', (locale, infix) => {
+describe.skipIf(!HAS_PAGES).each(Object.entries(LOCALES))('%s public pages', (locale, infix) => {
   const label = shippedLabel(locale);
 
   it.each(PAGES)('%s page uses the shipped menu label verbatim', (page) => {
