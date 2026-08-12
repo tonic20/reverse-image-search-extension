@@ -1,0 +1,52 @@
+# Inert in the private monorepo -- GitHub only reads workflows from the
+# repository root -- and comes alive in
+# github.com/tonic20/reverse-image-search-extension, the subtree mirror of
+# this directory, where extension/ IS the root.
+#
+# Node is pinned to the version in the AMO source-code build note so a green
+# run is evidence for the reproducible-build claim made to reviewers, not just
+# a passing test suite.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: '23.9.0'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run compile
+
+      # Includes store-review-url.build.test.ts, which builds the firefox, edge
+      # and opera targets and greps the output -- so this also proves every
+      # target still builds, not just that the units pass.
+      - name: Run tests
+        run: npm test
+
+      - name: Package all store targets
+        run: |
+          npm run zip
+          npm run zip:firefox
+          npm run zip:edge
+          npm run zip:opera
+
+      # The validator AMO itself runs. Errors fail the build; warnings are
+      # expected (two first-party innerHTML assignments) and do not.
+      - name: Validate Firefox package with addons-linter
+        run: npx --yes addons-linter .output/*-firefox.zip
