@@ -45,8 +45,11 @@ npm run compile        # tsc --noEmit
 npm test               # vitest
 ```
 
-Two suites in `lib/store-listing-completeness.test.ts` check store-listing
-copy that lives in the private monorepo. They skip automatically here.
+Suites in `lib/store-listing-completeness.test.ts` and
+`lib/menu-label-parity.test.ts` check copy that lives in the private
+monorepo — store-listing drafts and the Rails view templates — and skip
+automatically here. Expect about half the suite to skip in this repo; that
+is correct, not a broken checkout.
 
 ## Package
 
