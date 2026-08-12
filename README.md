@@ -60,8 +60,9 @@ npm run zip:edge
 npm run zip:opera
 ```
 
-Output lands in `.output/`. The build is deterministic: a clean rebuild
-reproduces the shipped bundle byte for byte.
+Output lands in `.output/`. With the pinned Node version and the committed
+`package-lock.json`, the build is deterministic: a clean rebuild reproduces
+the shipped bundle byte for byte.
 
 ## About this mirror
 
@@ -78,5 +79,5 @@ upstream by hand and credited.
 
 [MIT](LICENSE) © 2026 Anton Kopylov.
 
-The backend (presigned S3 uploads, and the search proxies behind the paid
-tier) is not part of this repository and is not MIT-licensed.
+The backend (presigned S3 uploads and the search proxies) is not part of this
+repository and is not MIT-licensed.
