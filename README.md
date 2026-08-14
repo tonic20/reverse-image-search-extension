@@ -16,9 +16,11 @@ Engines: **Google Lens · Yandex · Bing Visual · TinEye.**
 ## Why this repository exists
 
 The privacy claims on the product site — plain searches never touch our
-servers, uploads happen only when you ask and auto-delete within about an hour
-— are the main reason to install this over an alternative. They are worth
-nothing if you have to take them on trust. This is the code, so you don't.
+servers, and uploads (only when you ask) get a link that expires after 15
+minutes, and once it does nobody can reach the file; the file itself is
+deleted automatically about a day after it arrives — are the main reason to
+install this over an alternative. They are worth nothing if you have to take
+them on trust. This is the code, so you don't.
 
 Start with [`entrypoints/background.ts`](entrypoints/background.ts) for the
 context-menu and search routing, [`lib/config.ts`](lib/config.ts) for every
