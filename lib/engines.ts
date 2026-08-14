@@ -2,6 +2,14 @@
 // to an existing engine and open its results page. These redirect endpoints are
 // UNDOCUMENTED and can change; keep this list hot-updatable (see /v1/config).
 // Verified current: 2026-07 (Bing switched to the searchbyimage endpoint).
+//
+// DESKTOP ONLY for Bing: `searchbyimage` returns 404 to mobile user-agents
+// (verified 2026-08-14). Firefox for Android hits this today.
+//
+// The marketing site keeps its own copy in backend/app/models/search_engine.rb.
+// The published mirror forbids reading outside extension/ (AGENTS.md), so the
+// duplication is structural — change both together, and run
+// `bin/rails engines:smoke` in backend/ to check them.
 
 export interface Engine {
   id: string;
