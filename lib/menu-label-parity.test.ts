@@ -33,8 +33,10 @@ const LOCALES: Record<string, string> = {
   ru: '.ru',
 };
 
-/** Public pages that instruct the user to pick the upload menu item. */
-const PAGES = ['guide', 'support', 'privacy'];
+/** Public pages that instruct the user to pick the upload menu item.
+    `support` lived here until it was folded into `guide`; when a page merges
+    away, drop it from this list rather than leaving a read that ENOENTs. */
+const PAGES = ['guide', 'privacy'];
 
 /** Labels the copy used to carry. Regressing to one of these is the bug. */
 const STALE = ['Search image (upload)', 'All engines (upload)'];
