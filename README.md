@@ -29,8 +29,9 @@ server address the extension knows about, and
 
 ## Build
 
-Requires Node 24.18.1 (the version CI pins and the version quoted in the
-add-on-store build notes).
+Requires Node 24 (the line CI builds against). Add-on-store build notes quote
+the exact version each submitted package was built with, measured at release
+time — it does not have to match your local patch version.
 
 ```bash
 npm ci
