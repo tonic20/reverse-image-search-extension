@@ -29,7 +29,7 @@ server address the extension knows about, and
 
 ## Build
 
-Requires Node 23.9.0 (the version CI pins and the version quoted in the
+Requires Node 24.18.1 (the version CI pins and the version quoted in the
 add-on-store build notes).
 
 ```bash
