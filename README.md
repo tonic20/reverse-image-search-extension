@@ -78,6 +78,14 @@ commits.
 Issues and pull requests are welcome regardless; a PR here will be applied
 upstream by hand and credited.
 
+## Analytics
+
+Store performance for this extension — keyword rankings, installs, ratings, and
+listing changes across the Chrome Web Store and Firefox Add-ons — is tracked
+with [ExtensionDash](https://extensiondash.com), extension analytics made for
+agents: it serves the data over MCP, so a coding agent can answer questions
+like "which keywords gained rank this week?"
+
 ## Licence
 
 [MIT](LICENSE) © 2026 Anton Kopylov.
