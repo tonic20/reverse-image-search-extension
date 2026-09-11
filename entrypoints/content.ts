@@ -22,10 +22,11 @@ export default defineContentScript({
         srcUrl?: string;
         dataUrl?: string;
         engineIds?: string[];
+        action?: string;
       };
       if (msg?.type === MSG.START_CAPTURE) startCapture(false);
       else if (msg?.type === MSG.START_FACE_CAPTURE) startCapture(true);
-      else if (msg?.type === MSG.GRAB_IMAGE && msg.srcUrl) void grabImage(msg.srcUrl, msg.engineIds);
+      else if (msg?.type === MSG.GRAB_IMAGE && msg.srcUrl) void grabImage(msg.srcUrl, msg.engineIds, msg.action);
       else if (msg?.type === MSG.START_FACE_CROP) void startFaceCrop(msg.dataUrl, msg.srcUrl);
       else if (msg?.type === MSG.RESOLVE_IMAGE) {
         if (!lastRightClickSrc) {
@@ -49,10 +50,10 @@ let lastRightClickSrc: string | null = null;
  * (cross-origin without CORS), fall back to drawing the live <img> element to a
  * canvas — which works for same-origin and CORS-enabled images.
  */
-async function grabImage(srcUrl: string, engineIds?: string[]) {
+async function grabImage(srcUrl: string, engineIds?: string[], action?: string) {
   try {
     const dataUrl = await fetchAsDataUrl(srcUrl).catch(() => elementToDataUrl(srcUrl));
-    await browser.runtime.sendMessage({ type: MSG.SEARCH_IMAGE, dataUrl, engineIds });
+    await browser.runtime.sendMessage({ type: MSG.SEARCH_IMAGE, dataUrl, engineIds, action });
   } catch (err) {
     console.error('[RIS] in-page image grab failed:', err);
     showToast(i18n.t('content_toast_unreadable'));
@@ -210,6 +211,7 @@ async function finish(x: number, y: number, w: number, h: number, faceMode = fal
     await browser.runtime.sendMessage({
       type: faceMode ? MSG.SEARCH_FACE : MSG.SEARCH_IMAGE,
       dataUrl: cropped,
+      action: faceMode ? 'upload_face' : 'upload_capture',
     });
   } catch (err) {
     console.error('[RIS] region capture failed:', err);
@@ -453,7 +455,7 @@ function openCropOverlay(dataUrl: string) {
     try {
       const out = sel ? cropImageRegion(img, sel) : dataUrl;
       cleanup();
-      await browser.runtime.sendMessage({ type: MSG.SEARCH_FACE, dataUrl: out });
+      await browser.runtime.sendMessage({ type: MSG.SEARCH_FACE, dataUrl: out, action: 'upload_face' });
     } catch (err) {
       console.error('[RIS] face crop confirm failed:', err);
       cleanup();

@@ -10,6 +10,9 @@ import {
   grabImageBlobFromBackground,
   blobToDataUrlSW,
 } from '../lib/search';
+import { menuAction } from '../lib/telemetry';
+import { routeSearchMessage } from '../lib/search-router';
+import { countDirectSearch } from '../lib/telemetry-actions';
 
 const ALL_ID = 'ris-all';
 const UPLOAD_ID = 'ris-upload';
@@ -38,6 +41,7 @@ export default defineBackground(() => {
       dataUrl?: string;
       srcUrl?: string;
       engineIds?: string[];
+      action?: string;
     };
 
     if (msg?.type === MSG.CAPTURE_VIEWPORT) {
@@ -55,17 +59,11 @@ export default defineBackground(() => {
       return true; // keep the channel open for the async response
     }
 
-    if (msg?.type === MSG.SEARCH_IMAGE && msg.dataUrl) {
-      void searchImageByUpload(msg.dataUrl, msg.engineIds);
-    }
-
-    if (msg?.type === MSG.SEARCH_FACE && msg.dataUrl) {
-      void searchImageByUpload(msg.dataUrl, FACE_ENGINE_ORDER);
-    }
-
-    if (msg?.type === MSG.SEARCH_FACE_URL && msg.srcUrl) {
-      void faceSearchUrl(msg.srcUrl);
-    }
+    routeSearchMessage(msg, {
+      upload: (dataUrl, action, engineIds) => void searchImageByUpload(dataUrl, action, engineIds),
+      face: (dataUrl, action) => void searchImageByUpload(dataUrl, action, FACE_ENGINE_ORDER),
+      faceUrl: (srcUrl) => void faceSearchUrl(srcUrl),
+    });
     return undefined;
   });
 });
@@ -73,6 +71,7 @@ export default defineBackground(() => {
 async function faceSearchUrl(srcUrl: string) {
   const { openInBackground } = await getSettings();
   openUrlSearches(srcUrl, FACE_ENGINE_ORDER, openInBackground);
+  void countDirectSearch('direct_face');
 }
 
 /**
@@ -177,17 +176,19 @@ async function handleMenuClick(
     return;
   }
   if (menuItemId === UPLOAD_ID) {
-    await grabAndSearch(imageUrl, tabId, engineOrder);
+    await grabAndSearch(imageUrl, tabId, 'upload_menu', engineOrder);
     return;
   }
 
   const ids = menuItemId === ALL_ID ? engineOrder : [menuItemId];
   if (viaOverlay) {
     // Overlay-site image URLs usually don't hotlink → byte-grab then upload.
-    await grabAndSearch(imageUrl, tabId, ids);
+    await grabAndSearch(imageUrl, tabId, 'upload_overlay', ids);
   } else {
-    // Normal site → direct redirect; nothing touches our server.
+    // Normal site → direct redirect. Nothing but the count reaches our server:
+    // which menu item was picked, and this build's version.
     openUrlSearches(imageUrl, ids, openInBackground);
+    void countDirectSearch(menuAction(menuItemId, ALL_ID));
   }
 }
 
@@ -205,18 +206,19 @@ async function handleMenuClick(
 async function grabAndSearch(
   srcUrl: string,
   tabId: number | undefined,
+  action: 'upload_menu' | 'upload_overlay',
   engineIds?: string[],
 ) {
   const ids = engineIds ?? (await getSettings()).engineOrder;
 
   if (srcUrl.startsWith('data:')) {
-    await searchImageByUpload(srcUrl, ids);
+    await searchImageByUpload(srcUrl, action, ids);
     return;
   }
 
   const blob = await grabImageBlobFromBackground(srcUrl);
   if (blob) {
-    await searchImageBlob(blob, ids);
+    await searchImageBlob(blob, action, ids);
     return;
   }
 
@@ -232,7 +234,7 @@ async function grabAndSearch(
   // parties. For a private URL (e.g. ChatGPT) opening it raw both fails and leaks
   // a signed, authenticated link to every engine.
   if (tabId != null) {
-    await sendToTab(tabId, { type: MSG.GRAB_IMAGE, srcUrl, engineIds: ids });
+    await sendToTab(tabId, { type: MSG.GRAB_IMAGE, srcUrl, engineIds: ids, action });
     return;
   }
   console.warn('[RIS] could not grab image bytes for upload (no tab context):', srcUrl);
@@ -263,7 +265,7 @@ async function startFaceCrop(srcUrl: string, tabId: number | undefined) {
   } catch (err) {
     console.error('[RIS] face-crop dispatch failed:', err);
     // No content script on this tab — degrade to a whole-image face search.
-    if (dataUrl) await searchImageByUpload(dataUrl, FACE_ENGINE_ORDER);
+    if (dataUrl) await searchImageByUpload(dataUrl, 'upload_face', FACE_ENGINE_ORDER);
     else await faceSearchUrl(srcUrl);
   }
 }

@@ -97,7 +97,7 @@ async function onPaste(e: ClipboardEvent) {
     return;
   }
   const dataUrl = await fileToDataUrl(file);
-  await browser.runtime.sendMessage({ type: MSG.SEARCH_IMAGE, dataUrl });
+  await browser.runtime.sendMessage({ type: MSG.SEARCH_IMAGE, dataUrl, action: 'upload_paste' });
   window.close();
 }
 
