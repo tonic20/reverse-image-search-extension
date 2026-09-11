@@ -188,7 +188,10 @@ async function handleMenuClick(
     // Normal site → direct redirect. Nothing but the count reaches our server:
     // which menu item was picked, and this build's version.
     openUrlSearches(imageUrl, ids, openInBackground);
-    void countDirectSearch(menuAction(menuItemId, ALL_ID));
+    const action = menuAction(menuItemId, ALL_ID);
+    // An unrecognised menu id matches no engine above, so no search happened —
+    // skip the beacon rather than record one under a guessed label.
+    if (action) void countDirectSearch(action);
   }
 }
 

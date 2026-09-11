@@ -83,8 +83,8 @@ describe('menuAction', () => {
     expect(menuAction('tineye', 'ris-all')).toBe('direct_tineye');
   });
 
-  it('falls back to all-engines for a menu id it does not know', () => {
-    expect(menuAction('ris-something-new', 'ris-all')).toBe('direct_all');
+  it('is undefined for a menu id it does not know, rather than a guess', () => {
+    expect(menuAction('ris-something-new', 'ris-all')).toBeUndefined();
   });
 });
 

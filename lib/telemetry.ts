@@ -112,16 +112,17 @@ export function uploadAction(value: unknown): SearchAction | undefined {
  * Which direct action a context-menu id represents.
  *
  * The per-engine items carry the engine id as their menu id, so the mapping is
- * mechanical; an id we do not recognise is treated as all-engines, which is what
- * the search itself falls back to.
+ * mechanical. An id we do not recognise is `undefined`, not a guess: the caller
+ * builds `ids = [menuItemId]`, which matches no engine and opens no tab, so no
+ * search happens — recording one anyway would be a fabricated attribution.
  */
-export function menuAction(menuItemId: string, allId: string): SearchAction {
+export function menuAction(menuItemId: string, allId: string): SearchAction | undefined {
   if (menuItemId === allId) return 'direct_all';
 
   const candidate = `direct_${menuItemId}`;
   return (DIRECT_ACTIONS as readonly string[]).includes(candidate)
     ? (candidate as SearchAction)
-    : 'direct_all';
+    : undefined;
 }
 
 /**
