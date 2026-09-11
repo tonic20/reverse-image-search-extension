@@ -3,8 +3,20 @@ import { ENGINES } from './engines';
 import { getSettings } from './settings';
 import { API_BASE } from './config';
 import { recordSuccessfulSearch } from './review-prompt-actions';
+import { uploadHeaders } from './telemetry-actions';
+import type { SearchAction } from './telemetry';
 
-/** Image already has a public URL → open each engine's results. */
+/**
+ * Image already has a public URL → open each engine's results.
+ *
+ * Deliberately does NOT count anything: searchImageBlob also ends up here, and
+ * those searches are already counted by their presign request. The beacon fires
+ * at the call sites that are genuinely direct — which is also why this takes no
+ * action argument.
+ *
+ * Note the tabs are opened without awaiting, so a count taken around this call
+ * means "a search was started", never "engine tabs opened".
+ */
 export function openUrlSearches(
   imageUrl: string,
   engineIds: string[],
@@ -33,7 +45,11 @@ export function openUrlSearches(
  * presigned GET URL — so captured/pasted/Instagram images search across ALL
  * engines, not just Lens.
  */
-export async function searchImageBlob(blob: Blob, engineOverride?: string[]): Promise<void> {
+export async function searchImageBlob(
+  blob: Blob,
+  action: SearchAction | undefined,
+  engineOverride?: string[],
+): Promise<void> {
   try {
     if (blob.size === 0) throw new Error('empty image blob');
     const contentType = blob.type || 'image/png';
@@ -42,7 +58,7 @@ export async function searchImageBlob(blob: Blob, engineOverride?: string[]): Pr
     //    returns a presigned POST with an S3-enforced size cap.
     const presignRes = await fetch(`${API_BASE}/v1/uploads`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...(await uploadHeaders(action)) },
       body: JSON.stringify({ content_type: contentType }),
     });
     if (!presignRes.ok) throw new Error(`presign failed: ${presignRes.status}`);
@@ -77,9 +93,13 @@ export async function searchImageBlob(blob: Blob, engineOverride?: string[]): Pr
 }
 
 /** Convenience wrapper: search a raw image given as a data: URL. */
-export async function searchImageByUpload(dataUrl: string, engineOverride?: string[]): Promise<void> {
+export async function searchImageByUpload(
+  dataUrl: string,
+  action: SearchAction | undefined,
+  engineOverride?: string[],
+): Promise<void> {
   const blob = await (await fetch(dataUrl)).blob();
-  return searchImageBlob(blob, engineOverride);
+  return searchImageBlob(blob, action, engineOverride);
 }
 
 /**

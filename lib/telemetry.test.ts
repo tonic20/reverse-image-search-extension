@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import {
   ACTION_HEADER,
   VERSION_HEADER,
@@ -110,5 +110,16 @@ describe('the action lists', () => {
     expect(SEARCH_ACTIONS).toHaveLength(11);
     expect(DIRECT_ACTIONS).toHaveLength(6);
     expect(UPLOAD_ACTIONS).toHaveLength(5);
+  });
+});
+
+describe('uploadHeaders', () => {
+  it('returns no headers rather than throwing when settings cannot be read', async () => {
+    vi.doMock('./settings', () => ({ getSettings: async () => { throw new Error('storage gone'); } }));
+    vi.doMock('wxt/browser', () => ({ browser: { runtime: { getManifest: () => ({ version: '0.7.2' }) } } }));
+    vi.doMock('./config', () => ({ API_BASE: 'https://example.test' }));
+    const { uploadHeaders } = await import('./telemetry-actions');
+
+    await expect(uploadHeaders('upload_capture')).resolves.toEqual({});
   });
 });
