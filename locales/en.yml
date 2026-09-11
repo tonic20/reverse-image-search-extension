@@ -53,3 +53,7 @@ review_prompt_body: Your feedback helps more people find it.
 review_prompt_review: Leave a review
 review_prompt_later: Not now
 review_prompt_feedback: Send feedback instead
+
+# Usage counting (popup) — plain wording: what is sent is a label, not an image
+popup_count_searches: Count that a search happened (never the image or its address)
+popup_site_link: reverseimage.app

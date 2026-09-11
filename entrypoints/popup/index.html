@@ -45,7 +45,14 @@
       <span data-i18n="popup_open_background">Open “All engines” tabs in the background</span>
     </label>
 
-    <p class="footer"><span class="badge" data-i18n="popup_badge_private">Private</span><span data-i18n="popup_footer">Captured / pasted / face images upload privately and search across every enabled engine</span></p>
+    <label class="row">
+      <input type="checkbox" id="countSearches" />
+      <span data-i18n="popup_count_searches">Count that a search happened (never the image or its address)</span>
+    </label>
+
+    <p class="footer"><span class="badge" data-i18n="popup_badge_private">Private</span><span data-i18n="popup_footer">Captured / pasted / face images upload privately and search across every enabled engine</span>
+      <a class="site-link" href="https://reverseimage.app/" target="_blank" rel="noopener" data-i18n="popup_site_link">reverseimage.app</a>
+    </p>
     <script type="module" src="./main.ts"></script>
   </body>
 </html>

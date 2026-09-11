@@ -53,3 +53,5 @@ review_prompt_body: Dein Feedback hilft anderen, es zu finden.
 review_prompt_review: Bewertung schreiben
 review_prompt_later: Nicht jetzt
 review_prompt_feedback: Feedback senden
+popup_count_searches: Zählen, dass eine Suche stattgefunden hat (nie das Bild oder seine Adresse)
+popup_site_link: reverseimage.app

@@ -65,6 +65,10 @@ async function renderEngines() {
   const bg = document.getElementById('openInBackground') as HTMLInputElement;
   bg.checked = settings.openInBackground;
   bg.onchange = () => setSettings({ openInBackground: bg.checked });
+
+  const count = document.getElementById('countSearches') as HTMLInputElement;
+  count.checked = settings.countSearches;
+  count.onchange = () => setSettings({ countSearches: count.checked });
 }
 
 function status(text: string) {
