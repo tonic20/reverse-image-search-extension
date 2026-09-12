@@ -50,9 +50,20 @@
       <span data-i18n="popup_count_searches">Allow anonymous search statistics</span>
     </label>
 
-    <p class="footer"><span class="badge" data-i18n="popup_badge_private">Private</span><span data-i18n="popup_footer">Captured / pasted / face images upload privately and search across every enabled engine</span>
-      <a class="site-link" href="https://reverseimage.app/" target="_blank" rel="noopener" data-i18n="popup_site_link">reverseimage.app</a>
-    </p>
+    <p class="footer"><span class="badge" data-i18n="popup_badge_private">Private</span><span data-i18n="popup_footer">Captured / pasted / face images upload privately and search across every enabled engine</span></p>
+
+    <!-- Its own row below a rule: the privacy note describes the extension, this
+         offers a different tool. Run together they read as one sentence, and the
+         web tool goes unnoticed. -->
+    <a class="site-cta" href="https://reverseimage.app/" target="_blank" rel="noopener">
+      <svg class="site-cta-ico" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+        <circle cx="7" cy="7" r="4.6" fill="none" stroke="currentColor" stroke-width="1.6" />
+        <line x1="10.6" y1="10.6" x2="14.4" y2="14.4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+      </svg>
+      <span class="site-cta-label" data-i18n="popup_site_cta">Search on the web</span>
+      <span class="site-cta-host" data-i18n="popup_site_link">reverseimage.app</span>
+      <span class="site-cta-arrow" aria-hidden="true">&rarr;</span>
+    </a>
     <script type="module" src="./main.ts"></script>
   </body>
 </html>

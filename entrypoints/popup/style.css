@@ -117,5 +117,23 @@ input[type="checkbox"] { accent-color: var(--brand-600); }
   font-family: inherit;
 }
 .rp-link:hover { color: var(--brand-700); text-decoration: underline; }
-.site-link { color: var(--accent-700); text-decoration: none; white-space: nowrap; }
-.site-link:hover { text-decoration: underline; }
+/* One row, label left and host right. Wraps rather than overflowing: the label
+   is translated, and German and French run half again as long as English. */
+.site-cta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 10px;
+  padding-top: 9px;
+  border-top: 1px solid var(--slate-200);
+  font-size: 11px;
+  color: var(--accent-700);
+  text-decoration: none;
+}
+.site-cta-ico { width: 12px; height: 12px; flex: none; }
+/* Underline the label only — underlining the whole row drags in the host and
+   the arrow and reads as a broken link. */
+.site-cta:hover .site-cta-label { text-decoration: underline; }
+.site-cta-host { margin-left: auto; color: var(--slate-500); white-space: nowrap; }
+.site-cta-arrow { color: var(--slate-500); flex: none; }

@@ -56,4 +56,5 @@ review_prompt_feedback: Send feedback instead
 
 # Usage counting (popup) — plain wording: what is sent is a label, not an image
 popup_count_searches: Allow anonymous search statistics
+popup_site_cta: Search on the web
 popup_site_link: reverseimage.app
