@@ -1,7 +1,7 @@
 {
   "name": "reverse-image-search",
   "description": "Multi-engine reverse image search — right-click, paste, capture, or search where URLs fail.",
-  "version": "0.7.2",
+  "version": "0.8.0",
   "private": true,
   "type": "module",
   "scripts": {
