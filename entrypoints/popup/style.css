@@ -80,6 +80,8 @@ input[type="checkbox"] { accent-color: var(--brand-600); }
   background: var(--amber-50);
   color: var(--amber-700);
 }
+/* Beats any display rule below, so `el.hidden = true` really hides. */
+[hidden] { display: none !important; }
 .row { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--slate-700); margin-top: 14px; }
 .footer { font-size: 11px; color: var(--slate-500); margin: 14px 0 0; }
 .badge {

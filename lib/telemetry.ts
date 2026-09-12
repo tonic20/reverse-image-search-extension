@@ -48,6 +48,30 @@ export interface ReportingContext {
  * The upload path costs no extra request: the entry point and version travel on
  * the request that was already going out.
  */
+/**
+ * Whether counting is on, given every switch that can turn it off.
+ *
+ * `browserConsent` is Firefox's own data-collection permission: true or false
+ * where the browser owns the decision, null where it has no such concept —
+ * Chrome, and Firefox before 140.
+ *
+ * Where the browser owns it, our stored setting is not consulted at all. The
+ * popup hides its checkbox there, so that setting is whatever it happened to be
+ * beforehand; letting an invisible switch override the visible one is how you
+ * end up reporting against a refusal the user believes they recorded.
+ *
+ * A browser privacy signal still vetoes either way — it costs nothing and it is
+ * the only control left on Firefox below 140.
+ */
+export function countingEnabled(
+  setting: boolean,
+  browserConsent: boolean | null,
+  optedOutBySignal: boolean,
+): boolean {
+  if (optedOutBySignal) return false;
+  return browserConsent ?? setting;
+}
+
 export function countingHeaders(
   action: SearchAction | undefined,
   ctx: ReportingContext,

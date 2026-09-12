@@ -6,6 +6,7 @@ import {
   SEARCH_ACTIONS,
   DIRECT_ACTIONS,
   UPLOAD_ACTIONS,
+  countingEnabled,
   countingHeaders,
   menuAction,
   searchEventRequest,
@@ -121,5 +122,27 @@ describe('uploadHeaders', () => {
     const { uploadHeaders } = await import('./telemetry-actions');
 
     await expect(uploadHeaders('upload_capture')).resolves.toEqual({});
+  });
+});
+
+describe('countingEnabled', () => {
+  // Chrome, and Firefox below 140: no browser-level permission exists, so our
+  // own checkbox is the whole answer.
+  it('falls back to the stored setting when the browser has no opinion', () => {
+    expect(countingEnabled(true, null, false)).toBe(true);
+    expect(countingEnabled(false, null, false)).toBe(false);
+  });
+
+  // Firefox 140+: the browser owns it. The stored setting is whatever it
+  // happened to be before the popup stopped showing the row, so consulting it
+  // could only contradict a decision the user can actually see.
+  it('defers to the browser permission and ignores the stored setting', () => {
+    expect(countingEnabled(false, true, false)).toBe(true);
+    expect(countingEnabled(true, false, false)).toBe(false);
+  });
+
+  it('lets a privacy signal veto either source', () => {
+    expect(countingEnabled(true, null, true)).toBe(false);
+    expect(countingEnabled(true, true, true)).toBe(false);
   });
 });

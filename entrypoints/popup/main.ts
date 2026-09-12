@@ -2,6 +2,7 @@ import { browser } from 'wxt/browser';
 import { i18n } from '#i18n';
 import { ENGINES, DEFAULT_ENGINE_ORDER } from '../../lib/engines';
 import { getSettings, setSettings } from '../../lib/settings';
+import { browserOwnsDataConsent } from '../../lib/telemetry-actions';
 import { MSG } from '../../lib/messages';
 import { localizeDom } from '../../lib/dom-i18n';
 import { shouldPrompt } from '../../lib/review-prompt';
@@ -66,9 +67,18 @@ async function renderEngines() {
   bg.checked = settings.openInBackground;
   bg.onchange = () => setSettings({ openInBackground: bg.checked });
 
-  const count = document.getElementById('countSearches') as HTMLInputElement;
-  count.checked = settings.countSearches;
-  count.onchange = () => setSettings({ countSearches: count.checked });
+  // Firefox 140+ owns this decision: it shows the toggle in the install flow
+  // and the Add-ons Manager, and telemetry-actions reads it instead of the
+  // stored setting. Offering a second switch here could only contradict it.
+  const countRow = document.getElementById('countSearchesRow')!;
+  if (await browserOwnsDataConsent()) {
+    countRow.hidden = true;
+  } else {
+    countRow.hidden = false;
+    const count = document.getElementById('countSearches') as HTMLInputElement;
+    count.checked = settings.countSearches;
+    count.onchange = () => setSettings({ countSearches: count.checked });
+  }
 }
 
 function status(text: string) {

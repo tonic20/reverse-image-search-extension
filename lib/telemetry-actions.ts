@@ -4,10 +4,41 @@ import { API_BASE } from './config';
 import {
   ReportingContext,
   SearchAction,
+  countingEnabled,
   countingHeaders,
   searchEventRequest,
   signalsOptOut,
 } from './telemetry';
+
+/** The AMO data type our counting falls under. Must match wxt.config.ts. */
+const DATA_COLLECTION = 'technicalAndInteraction';
+
+/**
+ * Firefox's own answer to whether we may count, or null where the browser has
+ * no opinion to give.
+ *
+ * The presence of the `data_collection` key in getAll() is Mozilla's documented
+ * feature detection for the built-in consent experience, so one call both
+ * detects the feature and reads the answer. Detecting the capability rather
+ * than the browser is deliberate: Firefox below 140 has no such permission and
+ * must keep using our checkbox.
+ *
+ * Never throws. A browser that rejects the call is a browser with no opinion.
+ */
+async function dataCollectionConsent(): Promise<boolean | null> {
+  try {
+    const all = (await browser.permissions.getAll()) as { data_collection?: string[] };
+    if (!all || !('data_collection' in all)) return null;
+    return (all.data_collection ?? []).includes(DATA_COLLECTION);
+  } catch {
+    return null;
+  }
+}
+
+/** True when the browser owns this decision, so the popup must not offer it. */
+export async function browserOwnsDataConsent(): Promise<boolean> {
+  return (await dataCollectionConsent()) !== null;
+}
 
 /** This build's version, or '' if the manifest can't be read. */
 function version(): string {
@@ -25,7 +56,11 @@ function version(): string {
  */
 export async function reportingContext(): Promise<ReportingContext> {
   const { countSearches } = await getSettings();
-  const enabled = countSearches && !signalsOptOut(globalThis.navigator);
+  const enabled = countingEnabled(
+    countSearches,
+    await dataCollectionConsent(),
+    signalsOptOut(globalThis.navigator),
+  );
   return { enabled, version: version() };
 }
 

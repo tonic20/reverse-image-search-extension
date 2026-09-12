@@ -46,11 +46,21 @@ export default defineConfig({
               // region capture send image bytes to our S3 backend, and every
               // search hands the image or its URL to a third-party engine. That
               // image is page content, hence 'websiteContent'.
-              // Deliberately NOT declared: no analytics/telemetry ships in the
-              // extension, so 'technicalAndInteraction' does not apply; engine
-              // prefs live in browser sync storage and never reach us.
+              //
+              // 'technicalAndInteraction' covers the search counting added in
+              // 0.8.0 — that a search happened, which entry point started it,
+              // this build's version. It is listed as optional because Mozilla
+              // does not permit it to be required: it is the one data type the
+              // user must always be able to refuse. Firefox shows it as a
+              // toggle in the install flow, defaulting to on, and again in the
+              // Add-ons Manager.
+              //
+              // That toggle is the ONLY switch on Firefox 140+: the popup hides
+              // its own checkbox there and lib/telemetry-actions.ts reads the
+              // permission instead, so the two can never disagree.
               data_collection_permissions: {
                 required: ['websiteContent'],
+                optional: ['technicalAndInteraction'],
               },
             },
             // Android got data_collection_permissions two releases later (142).
