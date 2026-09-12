@@ -53,5 +53,5 @@ review_prompt_body: フィードバックは、より多くの人に届く助け
 review_prompt_review: レビューを書く
 review_prompt_later: 後で
 review_prompt_feedback: ご意見を送る
-popup_count_searches: 検索が行われたことだけを記録する（画像やそのURLは送信しません）
+popup_count_searches: 匿名の検索統計を許可する
 popup_site_link: reverseimage.app

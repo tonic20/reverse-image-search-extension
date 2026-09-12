@@ -53,5 +53,5 @@ review_prompt_body: Ваш отзыв поможет другим найти р�
 review_prompt_review: Оставить отзыв
 review_prompt_later: Не сейчас
 review_prompt_feedback: Написать нам
-popup_count_searches: Считать, что поиск состоялся (без изображения и его адреса)
+popup_count_searches: Разрешить анонимную статистику поиска
 popup_site_link: reverseimage.app
