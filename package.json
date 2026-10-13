@@ -1,6 +1,6 @@
 {
   "name": "reverse-image-search",
-  "description": "Right-click reverse image search on Google Lens, Yandex, Bing & TinEye. Works on Instagram & Pinterest. Face search, photo lookup.",
+  "description": "A right-click reverse image search tool for four engines at once, even on sites that hide photos. Face search, reverse photo lookup.",
   "version": "0.8.0",
   "private": true,
   "type": "module",
