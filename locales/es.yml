@@ -1,7 +1,7 @@
 # Manifest — Chrome substitutes __MSG_extName__ / __MSG_extDescription__ from
 # the generated _locales. Must stay flat top-level keys named exactly like this.
-extName: Reverse Image Search Anywhere
-extDescription: Búsqueda inversa de imágenes en Google Lens, Yandex, Bing y TinEye con un clic. Funciona en Instagram y Pinterest. Busca un rostro.
+extName: "Buscar por imagen - Reverse Image Search"
+extDescription: "La búsqueda inversa de imágenes permite buscar por foto. Prueba la búsqueda por imagen con Google Lens, Yandex, Bing y TinEye."
 
 # Shared (used in more than one entrypoint)
 cancel: Cancelar
@@ -9,7 +9,7 @@ search_this_face: Buscar este rostro
 
 # Popup
 popup_heading: Reverse Image Search Anywhere
-popup_hint_html: Haz clic derecho en cualquier imagen → <b>Reverse Image Search Anywhere</b>.
+popup_hint_html: Haz clic derecho en cualquier imagen → <b>$1</b>.
 popup_capture: Capturar región
 popup_paste: Pega una imagen — ⌘/Ctrl + V
 popup_engines_title: Motores

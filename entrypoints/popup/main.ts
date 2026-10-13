@@ -149,6 +149,12 @@ async function maybeShowReviewPrompt() {
 document.getElementById('capture')!.addEventListener('click', startCapture);
 document.getElementById('face')!.addEventListener('click', startFaceCapture);
 document.addEventListener('paste', onPaste);
-localizeDom(document, (key) => i18n.t(key as Parameters<typeof i18n.t>[0]));
+// The hint names the context-menu parent, which Chrome titles with the manifest name: the
+// localized extName, so the hint takes it as $1 and stays right in every language.
+localizeDom(document, (key) =>
+  key === 'popup_hint_html'
+    ? i18n.t('popup_hint_html', [i18n.t('extName')])
+    : i18n.t(key as Parameters<typeof i18n.t>[0]),
+);
 renderEngines();
 void maybeShowReviewPrompt();

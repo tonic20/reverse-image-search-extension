@@ -17,7 +17,10 @@ import { parse } from 'yaml';
 const LOCALES_DIR = fileURLToPath(new URL('../locales/', import.meta.url));
 const REQUIRED_MANIFEST_KEYS = ['extName', 'extDescription'];
 // Keys carrying a positional substitution; arity must match across locales.
-const SUBSTITUTION_ARITY: Record<string, number> = { status_reload: 1 };
+const SUBSTITUTION_ARITY: Record<string, number> = { status_reload: 1, popup_hint_html: 1 };
+// Locales with the whole UI translated. Every other locale carries only the store name and
+// short description (the manifest keys); Chrome falls back to en for the rest of the UI.
+const UI_LOCALES = ['es', 'pt_BR', 'fr', 'de', 'ru', 'ja'];
 
 function load(locale: string): Record<string, string> {
   return parse(readFileSync(`${LOCALES_DIR}${locale}.yml`, 'utf8')) as Record<string, string>;
@@ -32,6 +35,7 @@ const enKeys = Object.keys(en).sort();
 const otherLocales = readdirSync(LOCALES_DIR)
   .filter((f) => f.endsWith('.yml') && f !== 'en.yml')
   .map((f) => f.replace(/\.yml$/, ''));
+const nameOnlyLocales = otherLocales.filter((l) => !UI_LOCALES.includes(l));
 
 describe('en.yml catalog', () => {
   it('defines the manifest keys, non-empty', () => {
@@ -45,7 +49,7 @@ describe('en.yml catalog', () => {
   });
 });
 
-describe.each(otherLocales)('locale %s matches en', (locale) => {
+describe.each(UI_LOCALES)('locale %s matches en', (locale) => {
   const msgs = load(locale);
   it('has exactly the same keys as en (no missing, no extra)', () => {
     expect(Object.keys(msgs).sort()).toEqual(enKeys);
@@ -60,10 +64,27 @@ describe.each(otherLocales)('locale %s matches en', (locale) => {
   });
 });
 
+describe.each(nameOnlyLocales)('locale %s (name and description only)', (locale) => {
+  const msgs = load(locale);
+  it('has exactly the manifest keys, non-empty', () => {
+    expect(Object.keys(msgs).sort()).toEqual([...REQUIRED_MANIFEST_KEYS].sort());
+    for (const k of REQUIRED_MANIFEST_KEYS) expect(msgs[k]?.trim(), k).toBeTruthy();
+  });
+});
+
 describe('extension locale coverage', () => {
-  const REQUIRED_LOCALES = ['es', 'pt_BR', 'fr', 'de', 'ru', 'ja'];
-  it('ships every target locale', () => {
-    expect([...otherLocales].sort()).toEqual([...REQUIRED_LOCALES].sort());
+  it('ships every UI locale', () => {
+    for (const l of UI_LOCALES) expect(otherLocales).toContain(l);
+  });
+});
+
+// The store shows 45 characters of the name in search results.
+const NAME_MAX = 45;
+
+describe.each(['en', ...otherLocales])('locale %s manifest name', (locale) => {
+  const msgs = locale === 'en' ? en : load(locale);
+  it(`extName is at most ${NAME_MAX} code points`, () => {
+    expect([...(msgs.extName ?? '')].length).toBeLessThanOrEqual(NAME_MAX);
   });
 });
 
@@ -81,10 +102,12 @@ describe.each(['en', ...otherLocales])('locale %s manifest description', (locale
   });
 });
 
-describe.each(['en', ...otherLocales])('locale %s popup hint', (locale) => {
+// The context-menu parent is titled with the localized manifest name, so the popup hint takes
+// extName as $1 instead of spelling the name out (entrypoints/popup/main.ts).
+describe.each(['en', ...UI_LOCALES])('locale %s popup hint', (locale) => {
   const msgs = locale === 'en' ? en : load(locale);
-  it('names the manifest-backed context menu parent exactly', () => {
-    expect(msgs.popup_hint_html).toContain(`<b>${msgs.extName}</b>`);
+  it('names the context menu parent through the extName substitution', () => {
+    expect(msgs.popup_hint_html).toContain('<b>$1</b>');
   });
 });
 

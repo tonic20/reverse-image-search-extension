@@ -1,0 +1,5 @@
+# Manifest only: the store name and short description in this language, copied from
+# docs/store/_locales by scripts/build-extension-locales.ts. The UI is not translated into this
+# language, so Chrome shows it in English (locales/en.yml).
+extName: "Cari Gambar - Reverse Image Search"
+extDescription: "Klik kanan untuk search by image dan pencarian gambar di Google Lens, Yandex, Bing & TinEye, atau cari orang lewat foto."

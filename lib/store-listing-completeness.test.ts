@@ -10,8 +10,9 @@
 // and needs no `new URL()` call at all. No assertions, locales, or required
 // sections differ from the brief.
 import { describe, it, expect } from 'vitest';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
+import { parse } from 'yaml';
 
 const DOCS = path.join(import.meta.dirname, '../../docs/i18n/');
 // docs/ is private and does not exist in the public mirror
@@ -22,7 +23,8 @@ const DOCS = path.join(import.meta.dirname, '../../docs/i18n/');
 // readFileSync in a describe body, which runs at collection time.
 const HAS_DOCS = existsSync(DOCS);
 const LOCALES = ['es', 'pt_BR', 'fr', 'de', 'ru', 'ja'];
-const REQUIRED = ['## Name', '## Summary', '## Detailed description', '## Single-purpose', '## Permission justifications'];
+// The CWS name, summary and detailed description moved to docs/store/_locales (tested at the end).
+const REQUIRED = ['## Single-purpose', '## Permission justifications'];
 /** AMO needs its own summary (250 chars, not 132) and markdown description. */
 const REQUIRED_AMO = ['## AMO Summary', '## AMO Detailed description'];
 const AMO_SUMMARY_MAX = 250;
@@ -66,13 +68,6 @@ describe.skipIf(!HAS_DOCS).each(LOCALES)('store-listing.%s.md', (loc) => {
     it('description escapes <canvas> so AMO’s sanitizer cannot strip it', () => {
       expect(description).not.toMatch(/(?<!`)<canvas>/);
     });
-    // The CWS body needs the same tag gone for a different reason: CWS renders
-    // plain text, so a raw <canvas> shows literally to users and backticks
-    // would too — hence "canvas element" in prose there, not code formatting.
-    it('CWS body carries no raw <canvas> either', () => {
-      const cws = blockAfter(body, '## Detailed description');
-      expect(cws).not.toMatch(/<canvas>/);
-    });
     it('description does not claim stores we have not shipped to', () => {
       const closing = description.split('\n').filter(Boolean).at(-1)!;
       for (const store of ['Edge', 'Opera']) expect(closing).not.toContain(store);
@@ -88,5 +83,37 @@ describe.skipIf(!HAS_DOCS)('Russian face-search terminology', () => {
   it('uses the natural product label', () => {
     expect(body).toContain('«Поиск по лицу»');
     expect(body).not.toContain('«Искать это лицо»');
+  });
+});
+
+// The store copy of every language lives in docs/store/_locales (appName, shortDesc, storeDesc);
+// scripts/build-extension-locales.ts copies the name and short description into locales/*.yml.
+// This catches an edit to one side that was not carried to the other.
+const STORE = path.join(import.meta.dirname, '../../docs/store/_locales/');
+const CATALOGS = path.join(import.meta.dirname, '../locales/');
+
+describe.skipIf(!existsSync(STORE))('store name and short description in the extension', () => {
+  const storeLocales = () => readdirSync(STORE).filter((l) => existsSync(path.join(STORE, l, 'messages.json')));
+  const store = (l: string) => JSON.parse(readFileSync(path.join(STORE, l, 'messages.json'), 'utf8'));
+  const catalog = (l: string) => parse(readFileSync(path.join(CATALOGS, `${l}.yml`), 'utf8')) as Record<string, string>;
+
+  it('every store language has a catalog, and every catalog a store language', () => {
+    const catalogs = readdirSync(CATALOGS).filter((f) => f.endsWith('.yml')).map((f) => f.replace(/\.yml$/, ''));
+    expect(catalogs.sort()).toEqual(storeLocales().sort());
+  });
+  it('extName and extDescription are the store appName and shortDesc', () => {
+    for (const l of storeLocales()) {
+      expect(catalog(l).extName, l).toBe(store(l).appName.message);
+      expect(catalog(l).extDescription, l).toBe(store(l).shortDesc.message);
+    }
+  });
+  // CWS renders plain text, so a raw <canvas> would show literally to users and backticks would
+  // too — hence "canvas element" in prose there, not code formatting.
+  it('no store description carries a raw <canvas>', () => {
+    for (const l of storeLocales()) expect(store(l).storeDesc.message, l).not.toMatch(/<canvas>/);
+  });
+  it('English is the source: the short description is package.json description', () => {
+    const pkg = JSON.parse(readFileSync(path.join(import.meta.dirname, '../package.json'), 'utf8'));
+    expect(store('en').shortDesc.message).toBe(pkg.description);
   });
 });

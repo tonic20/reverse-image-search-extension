@@ -1,0 +1,5 @@
+# Manifest only: the store name and short description in this language, copied from
+# docs/store/_locales by scripts/build-extension-locales.ts. The UI is not translated into this
+# language, so Chrome shows it in English (locales/en.yml).
+extName: "Buscar por imagen - Reverse Image Search"
+extDescription: "Tu buscador de imágenes para hacer una búsqueda inversa de imágenes y buscar persona por foto con Google Lens, Yandex, Bing y TinEye"

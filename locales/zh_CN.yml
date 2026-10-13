@@ -1,0 +1,5 @@
+# Manifest only: the store name and short description in this language, copied from
+# docs/store/_locales by scripts/build-extension-locales.ts. The UI is not translated into this
+# language, so Chrome shows it in English (locales/en.yml).
+extName: "以图搜图 - Reverse Image Search"
+extDescription: "右键即可通过 Google Lens、Yandex、Bing 和 TinEye 反向搜图，支持 Instagram 和 Pinterest。以图搜图、图片查找、人脸搜索，轻松查来源、找相似图。"
