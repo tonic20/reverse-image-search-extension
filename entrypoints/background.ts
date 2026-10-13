@@ -13,6 +13,7 @@ import {
 import { menuAction } from '../lib/telemetry';
 import { routeSearchMessage } from '../lib/search-router';
 import { countDirectSearch } from '../lib/telemetry-actions';
+import { WELCOME_BASE, welcomeLocale, welcomeUrl, type PinMessage, type WelcomeBrowser } from '../lib/welcome';
 
 const ALL_ID = 'ris-all';
 const UPLOAD_ID = 'ris-upload';
@@ -22,6 +23,39 @@ const CAPTURE_ID = 'ris-capture';
 // WXT auto-imports `defineBackground`.
 export default defineBackground(() => {
   browser.runtime.onInstalled.addListener(() => void rebuildMenus());
+
+  // The welcome page, once, on a fresh install only (lib/welcome.ts).
+  browser.runtime.onInstalled.addListener(({ reason }) => {
+    if (reason === 'install') void openWelcomePage();
+  });
+
+  // The open welcome page connects to learn whether the icon is pinned and hears each change while
+  // it stays open. Chromium only: Firefox has no externally_connectable. The change event is
+  // Chrome 130+; before that the page gets the state once. When this worker sleeps the port
+  // closes and the page reconnects.
+  if (!import.meta.env.FIREFOX && WELCOME_BASE) {
+    const welcomeOrigin = new URL(WELCOME_BASE).origin;
+    browser.runtime.onConnectExternal.addListener((port) => {
+      if (port.sender?.origin !== welcomeOrigin) {
+        port.disconnect();
+        return;
+      }
+      const send = (pinned: boolean | undefined) => {
+        if (pinned === undefined) return;
+        try {
+          port.postMessage({ pinned } satisfies PinMessage);
+        } catch {
+          // The page closed between the question and the answer.
+        }
+      };
+      browser.action.getUserSettings().then((s) => send(s.isOnToolbar), () => {});
+      const changed = browser.action.onUserSettingsChanged as typeof browser.action.onUserSettingsChanged | undefined;
+      if (!changed) return;
+      const onChange = (change: { isOnToolbar?: boolean }) => send(change.isOnToolbar);
+      changed.addListener(onChange);
+      port.onDisconnect.addListener(() => changed.removeListener(onChange));
+    });
+  }
   browser.runtime.onStartup.addListener(() => void rebuildMenus());
   browser.storage.onChanged.addListener((_changes, area) => {
     if (area === 'sync') void rebuildMenus();
@@ -107,6 +141,27 @@ function hintReloadNeeded(tabId: number) {
 function clearHint(tabId: number) {
   safeAction(browser.action.setBadgeText({ tabId, text: '' }));
   safeAction(browser.action.setTitle({ tabId, title: i18n.t('extName') }));
+}
+
+async function openWelcomePage() {
+  if (!WELCOME_BASE) return;
+  let pinned: boolean | undefined;
+  try {
+    pinned = (await browser.action.getUserSettings()).isOnToolbar;
+  } catch {
+    // Not known in this browser: the page shows the steps that work either way.
+  }
+  const name: WelcomeBrowser = import.meta.env.FIREFOX ? 'firefox' : import.meta.env.EDGE ? 'edge' : 'chrome';
+  await browser.tabs.create({
+    url: welcomeUrl({
+      base: WELCOME_BASE,
+      locale: welcomeLocale(browser.i18n.getUILanguage()),
+      pinned,
+      browser: name,
+      id: import.meta.env.FIREFOX ? undefined : browser.runtime.id,
+      menu: i18n.t('extName'),
+    }),
+  });
 }
 
 async function rebuildMenus() {

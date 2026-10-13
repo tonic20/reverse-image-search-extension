@@ -23,6 +23,11 @@ export default defineConfig({
       'storage',
     ],
     host_permissions: ['<all_urls>'],
+    // The welcome page (lib/welcome.ts) connects for the live pin state. Chromium only: Firefox
+    // does not support the key. Adds no install warning. Keep the origin in sync with WELCOME_BASE.
+    ...(browser !== 'firefox'
+      ? { externally_connectable: { matches: [`${new URL(process.env.VITE_WELCOME_BASE || 'https://reverseimage.app').origin}/*`] } }
+      : {}),
     // Firefox-only: AMO requires a stable add-on id. Emitted only for the firefox
     // target — WXT does NOT strip this key on its own, and Chromium logs
     // "Unrecognized manifest key" if it leaks through.

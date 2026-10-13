@@ -62,4 +62,16 @@ describe('built bundles carry no foreign store URL', () => {
       }
     }
   });
+
+  // The welcome page connects to the extension for the live pin state (lib/welcome.ts).
+  // Chromium supports externally_connectable; Firefox does not and would warn on it.
+  const manifest = (target: string) =>
+    JSON.parse(readFileSync(path.join(EXT_ROOT, '.output', `${target}-mv3`, 'manifest.json'), 'utf8'));
+
+  it.each(['edge', 'opera'])('%s build lets the welcome page connect', (target) => {
+    expect(manifest(target).externally_connectable).toEqual({ matches: ['https://reverseimage.app/*'] });
+  });
+  it('firefox build has no externally_connectable', () => {
+    expect(manifest('firefox').externally_connectable).toBeUndefined();
+  });
 });
