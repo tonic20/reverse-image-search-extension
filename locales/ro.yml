@@ -2,4 +2,4 @@
 # docs/store/_locales by scripts/build-extension-locales.ts. The UI is not translated into this
 # language, so Chrome shows it in English (locales/en.yml).
 extName: "Căutare după imagine - Reverse Image Search"
-extDescription: "Căutare inversă de imagini cu clic dreapta: Google Lens, Yandex, Bing, TinEye. Caută fețe și poze pe Instagram și Pinterest."
+extDescription: "Căutare inversă de imagini pe 4 motoare, prin clic dreapta, chiar și pe site-uri cu poze ascunse. Căutare după poze și fețe."

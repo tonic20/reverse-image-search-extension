@@ -2,4 +2,4 @@
 # docs/store/_locales by scripts/build-extension-locales.ts. The UI is not translated into this
 # language, so Chrome shows it in English (locales/en.yml).
 extName: "以圖搜圖 - Reverse Image Search"
-extDescription: "按右鍵即可用 Google Lens、Yandex、Bing 和 TinEye 反向圖片搜尋，支援 Instagram 和 Pinterest。以圖搜圖、臉部搜尋、照片查詢一次搞定。"
+extDescription: "右鍵一按，同時用四大引擎反向圖片搜尋，連隱藏照片的網站也能搜尋。以圖搜圖、人臉搜尋、照片查詢，輕鬆找出圖片來源與相似照片。"

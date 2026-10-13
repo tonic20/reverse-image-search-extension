@@ -1,7 +1,7 @@
 # Manifest — Chrome substitutes __MSG_extName__ / __MSG_extDescription__ from
 # the generated _locales. Must stay flat top-level keys named exactly like this.
 extName: "Поиск по картинке - Reverse Image Search"
-extDescription: "Нужно найти по фото человека или картинку? Запустите поиск по фото или поиск по лицу правым кликом — даже в Instagram и Pinterest."
+extDescription: "Запускайте поиск по фото и поиск по лицу правым кликом сразу в 4 системах. Поможет найти по фото на сайтах со скрытыми снимками."
 
 # Shared (used in more than one entrypoint)
 cancel: Отмена

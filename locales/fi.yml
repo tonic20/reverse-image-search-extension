@@ -2,4 +2,4 @@
 # docs/store/_locales by scripts/build-extension-locales.ts. The UI is not translated into this
 # language, so Chrome shows it in English (locales/en.yml).
 extName: "Käänteinen kuvahaku - Reverse Image Search"
-extDescription: "Käänteinen kuvahaku: Google Lens, Yandex, Bing ja TinEye. Hae kuvalla Instagramissa ja Pinterestissä. Kasvohaku ja valokuvahaku."
+extDescription: "Käänteinen kuvahaku neljällä hakukoneella yhtä aikaa. Klikkaa hiiren oikealla: kasvohaku, valokuvahaku ja haku kuvan perusteella."

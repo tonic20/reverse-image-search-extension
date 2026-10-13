@@ -2,4 +2,4 @@
 # docs/store/_locales by scripts/build-extension-locales.ts. The UI is not translated into this
 # language, so Chrome shows it in English (locales/en.yml).
 extName: "Meklēšana pēc attēla - Reverse Image Search"
-extDescription: "Meklēšana pēc attēla ar Google Lens, Yandex, Bing un TinEye. Arī Instagram un Pinterest. Seju un foto meklēšana."
+extDescription: "Meklēšana pēc attēla četrās meklētājprogrammās reizē ar labo klikšķi — arī slēptiem foto. Seju meklēšana un foto avotu atrašana."

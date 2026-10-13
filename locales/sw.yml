@@ -1,5 +1,5 @@
 # Manifest only: the store name and short description in this language, copied from
 # docs/store/_locales by scripts/build-extension-locales.ts. The UI is not translated into this
 # language, so Chrome shows it in English (locales/en.yml).
-extName: "Tafuta kwa Picha - Reverse Image Search"
-extDescription: "Bofya kulia: Tafuta kwa picha kwa Google Lens, Yandex, Bing na TinEye. Hufanya kazi Instagram na Pinterest. Tafuta nyuso na picha."
+extName: "Utafutaji kwa Picha - Reverse Image Search"
+extDescription: "Tafuta kwa picha au uso kwa kubofya kulia. Tumia injini nne kwa pamoja, hata kwenye tovuti zinazoficha picha."

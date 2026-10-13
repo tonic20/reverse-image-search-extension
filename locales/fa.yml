@@ -1,5 +1,5 @@
 # Manifest only: the store name and short description in this language, copied from
 # docs/store/_locales by scripts/build-extension-locales.ts. The UI is not translated into this
 # language, so Chrome shows it in English (locales/en.yml).
-extName: "جستجوی معکوس عکس - Reverse Image Search"
-extDescription: "جستجوی معکوس عکس با کلیک راست در Google Lens، Yandex، Bing و TinEye. جستجو با عکس، جستجوی چهره و یافتن عکس در Instagram و Pinterest."
+extName: "جستجوی معکوس تصویر - Reverse Image Search"
+extDescription: "جستجوی معکوس تصویر با راست‌کلیک در چهار موتور هم‌زمان، حتی در سایت‌هایی با عکس‌های پنهان. جستجو با عکس و جستجوی چهره."

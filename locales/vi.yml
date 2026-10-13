@@ -2,4 +2,4 @@
 # docs/store/_locales by scripts/build-extension-locales.ts. The UI is not translated into this
 # language, so Chrome shows it in English (locales/en.yml).
 extName: "Tìm kiếm bằng hình ảnh - Reverse Image Search"
-extDescription: "Nhấp chuột phải để tìm kiếm ngược bằng hình ảnh với Google Lens, Yandex, Bing, TinEye. Tìm khuôn mặt, tra cứu ảnh."
+extDescription: "Tìm kiếm ngược bằng hình ảnh trên 4 công cụ bằng chuột phải, cả ảnh bị ẩn. Tìm khuôn mặt, tra cứu ảnh."

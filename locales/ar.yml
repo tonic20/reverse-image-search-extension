@@ -2,4 +2,4 @@
 # docs/store/_locales by scripts/build-extension-locales.ts. The UI is not translated into this
 # language, so Chrome shows it in English (locales/en.yml).
 extName: "البحث بالصور - Reverse Image Search"
-extDescription: "بحث عكسي بالصور وبحث بالوجه بنقرة يمين عبر Google Lens وYandex وBing وTinEye. ابحث بصورة على Instagram وPinterest."
+extDescription: "بحث عكسي بالصور بأربعة محركات بالنقر بالزر الأيمن، حتى في المواقع التي تخفي الصور. بحث بالصور، بحث عن الوجوه والعثور على مصدر الصور."

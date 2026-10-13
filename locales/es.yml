@@ -1,7 +1,7 @@
 # Manifest — Chrome substitutes __MSG_extName__ / __MSG_extDescription__ from
 # the generated _locales. Must stay flat top-level keys named exactly like this.
 extName: "Buscar por imagen - Reverse Image Search"
-extDescription: "La búsqueda inversa de imágenes permite buscar por foto. Prueba la búsqueda por imagen con Google Lens, Yandex, Bing y TinEye."
+extDescription: "Con la búsqueda inversa de imágenes puedes buscar por foto con un clic derecho y hacer una búsqueda por imagen en cuatro motores."
 
 # Shared (used in more than one entrypoint)
 cancel: Cancelar

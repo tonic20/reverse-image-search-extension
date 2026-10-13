@@ -2,4 +2,4 @@
 # docs/store/_locales by scripts/build-extension-locales.ts. The UI is not translated into this
 # language, so Chrome shows it in English (locales/en.yml).
 extName: "Претрага по слици - Reverse Image Search"
-extDescription: "Претрага по слици десним кликом: Google Lens, Yandex, Bing и TinEye. Ради на Instagram и Pinterest. Претрага лица и фотографија."
+extDescription: "Обрнута претрага слика десним кликом на четири претраживача, чак и на сајтовима који скривају слике. Претрага лица и фотографија."

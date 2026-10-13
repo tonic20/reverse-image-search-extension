@@ -1,5 +1,5 @@
 # Manifest only: the store name and short description in this language, copied from
 # docs/store/_locales by scripts/build-extension-locales.ts. The UI is not translated into this
 # language, so Chrome shows it in English (locales/en.yml).
-extName: "ફોટાથી શોધો - Reverse Image Search"
-extDescription: "Google Lens, Yandex, Bing અને TinEye પર રિવર્સ ઇમેજ સર્ચ. Instagram અને Pinterest પર પણ. ચહેરાથી શોધ, ફોટાથી શોધ."
+extName: "ફોટોથી શોધ - Reverse Image Search"
+extDescription: "રાઇટ-ક્લિકથી ચાર એન્જિન પર એકસાથે રિવર્સ ઇમેજ સર્ચ. છુપાયેલા ફોટા પણ શોધો. ફોટોથી શોધ, ચહેરાની શોધ અને ફોટો શોધ."

@@ -2,4 +2,4 @@
 # docs/store/_locales by scripts/build-extension-locales.ts. The UI is not translated into this
 # language, so Chrome shows it in English (locales/en.yml).
 extName: "Vyhledávání obrázkem - Reverse Image Search"
-extDescription: "Vyhledávání podle obrázku: Google Lens, Yandex, Bing a TinEye. Hledání tváří a fotek. I na Instagramu a Pinterestu."
+extDescription: "Zpětné vyhledávání obrázků ve čtyřech vyhledávačích pravým kliknutím. Hledání podle fotky i obličeje, i u skrytých fotek."

@@ -2,4 +2,4 @@
 # docs/store/_locales by scripts/build-extension-locales.ts. The UI is not translated into this
 # language, so Chrome shows it in English (locales/en.yml).
 extName: "Pöördpildiotsing - Reverse Image Search"
-extDescription: "Pöördpildiotsing: Google Lens, Yandex, Bing ja TinEye. Töötab Instagramis ja Pinterestis. Näootsing ja foto järgi otsimine."
+extDescription: "Pöördpildiotsing nelja otsingumootoriga, ka peidetud fotodel. Paremklõpsuga pildi järgi otsing, näootsing ja fotootsing."

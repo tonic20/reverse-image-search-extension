@@ -2,4 +2,4 @@
 # docs/store/_locales by scripts/build-extension-locales.ts. The UI is not translated into this
 # language, so Chrome shows it in English (locales/en.yml).
 extName: "Cerca per imatge - Reverse Image Search"
-extDescription: "Cerca inversa d'imatges amb clic dret a Google Lens, Yandex, Bing i TinEye. Cerca de cares i fotos. A Instagram i Pinterest."
+extDescription: "Cerca inversa d'imatges amb quatre motors alhora, fins i tot amb fotos ocultes. Cerca per imatge, de cares i de fotos."

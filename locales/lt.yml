@@ -2,4 +2,4 @@
 # docs/store/_locales by scripts/build-extension-locales.ts. The UI is not translated into this
 # language, so Chrome shows it in English (locales/en.yml).
 extName: "Paieška pagal vaizdą - Reverse Image Search"
-extDescription: "Paieška pagal vaizdą per Google Lens, Yandex, Bing ir TinEye. Veidų ir nuotraukų paieška. Veikia Instagram ir Pinterest."
+extDescription: "Paieška pagal vaizdą 4 sistemose dešiniuoju pelės mygtuku. Veidų ir nuotraukų paieška net ten, kur nuotraukos paslėptos."

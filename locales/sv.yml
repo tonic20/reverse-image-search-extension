@@ -2,4 +2,4 @@
 # docs/store/_locales by scripts/build-extension-locales.ts. The UI is not translated into this
 # language, so Chrome shows it in English (locales/en.yml).
 extName: "Bildsök - Reverse Image Search"
-extDescription: "Testa omvänd bildsökning: sök med bild från Instagram eller Pinterest. Högerklicka och sök bild via Google Lens och fler."
+extDescription: "Högerklicka för omvänd bildsökning: sök med bild i fyra sökmotorer, hitta ansikten och sök bild även där foton döljs."

@@ -2,4 +2,4 @@
 # docs/store/_locales by scripts/build-extension-locales.ts. The UI is not translated into this
 # language, so Chrome shows it in English (locales/en.yml).
 extName: "Fordított képkeresés - Reverse Image Search"
-extDescription: "Fordított képkeresés jobb kattintással: Google Lens, Yandex, Bing, TinEye. Arckeresés, fotókeresés Instagramon és Pinteresten."
+extDescription: "Fordított képkeresés négy keresővel, jobb kattintással, rejtett fotókhoz is. Keresés kép alapján, arckeresés, fotókeresés."

@@ -2,4 +2,4 @@
 # docs/store/_locales by scripts/build-extension-locales.ts. The UI is not translated into this
 # language, so Chrome shows it in English (locales/en.yml).
 extName: "ছবি দিয়ে সার্চ - Reverse Image Search"
-extDescription: "রাইট-ক্লিকে Google Lens, Yandex, Bing ও TinEye-তে রিভার্স ইমেজ সার্চ। ছবি দিয়ে খুঁজুন, মুখ খুঁজুন। Instagram ও Pinterest-এও চলে।"
+extDescription: "রাইট-ক্লিকে চার ইঞ্জিনে একসঙ্গে রিভার্স ইমেজ সার্চ—লুকানো ছবিতেও। ছবি দিয়ে খোঁজা, ফেস সার্চ ও ছবির উৎস খুঁজে পাওয়া।"
