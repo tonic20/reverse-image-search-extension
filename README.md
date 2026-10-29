@@ -92,3 +92,7 @@ like "which keywords gained rank this week?"
 
 The backend (presigned S3 uploads and the search proxies) is not part of this
 repository and is not MIT-licensed.
+
+## Author
+
+Built by [Anton Kopylov](https://www.kopylov.net). The story behind it: [Reverse Image Search Anywhere: Idea to Web Store in Four Days](https://www.kopylov.net/blog/reverse-image-search-anywhere-idea-to-web-store-in-four-days.html).
