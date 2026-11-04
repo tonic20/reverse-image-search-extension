@@ -1,5 +1,5 @@
 // Pins the store→review-URL map. The bug this guards: v0.7.0 shipped a
-// hardcoded Chrome Web Store URL, so the review prompt on any non-Chrome build
+// hardcoded Chrome Web Store URL, so the review card on any non-Chrome build
 // sent users to a listing they hadn't installed from and couldn't review.
 //
 // reviewUrlFor() takes the target as an argument rather than reading

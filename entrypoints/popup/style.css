@@ -5,7 +5,7 @@
   --accent-50: #f0fdfa; --accent-100: #ccfbf1; --accent-700: #0f766e;
   --slate-50: #f8fafc; --slate-200: #e2e8f0; --slate-300: #cbd5e1;
   --slate-500: #64748b; --slate-700: #334155; --slate-900: #0f172a;
-  --haze: #f4f5ff; --amber-50: #fffbeb; --amber-700: #b45309;
+  --haze: #f4f5ff; --amber-50: #fffbeb; --amber-400: #fbbf24; --amber-700: #b45309;
   --radius-md: 12px;
   --shadow-brand: 0 1px 2px rgba(79,70,229,.20);
   --font: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
@@ -95,28 +95,6 @@ input[type="checkbox"] { accent-color: var(--brand-600); }
   font-weight: 500;
   margin-right: 4px;
 }
-.review-prompt {
-  border: 1px solid var(--slate-200);
-  background: var(--haze);
-  border-radius: var(--radius-md);
-  padding: 12px;
-  margin: 0 0 12px;
-}
-.rp-title { font-size: 13px; font-weight: 600; margin: 0; color: var(--slate-900); }
-.rp-body { font-size: 12px; color: var(--slate-500); margin: 4px 0 10px; }
-.rp-actions { display: flex; flex-direction: column; gap: 8px; }
-.rp-secondary { display: flex; justify-content: space-between; }
-.rp-link {
-  appearance: none;
-  border: none;
-  background: none;
-  cursor: pointer;
-  color: var(--slate-500);
-  font-size: 12px;
-  padding: 2px 0;
-  font-family: inherit;
-}
-.rp-link:hover { color: var(--brand-700); text-decoration: underline; }
 /* One row, label left and host right. Wraps rather than overflowing: the label
    is translated, and German and French run half again as long as English. */
 .site-cta {
@@ -137,3 +115,24 @@ input[type="checkbox"] { accent-color: var(--brand-600); }
 .site-cta:hover .site-cta-label { text-decoration: underline; }
 .site-cta-host { margin-left: auto; color: var(--slate-500); white-space: nowrap; }
 .site-cta-arrow { color: var(--slate-500); flex: none; }
+/* Rate us: one quiet line under everything, empty stars that fill up to the one pointed at. */
+.rate {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 8px;
+  padding-top: 6px;
+  border-top: 1px solid var(--slate-200);
+  font-size: 11px;
+  color: var(--slate-500);
+}
+.rate[hidden] { display: none; }
+.stars { display: flex; }
+.stars a { width: 26px; height: 26px; display: grid; place-items: center; border-radius: 6px; color: var(--slate-300); }
+.stars a:focus-visible { outline: 2px solid var(--brand-500); outline-offset: -2px; }
+.stars svg { width: 18px; height: 18px; fill: transparent; transition: fill .12s, color .12s; }
+.stars:hover a, .stars:has(:focus-visible) a { color: var(--amber-400); }
+.stars:hover svg, .stars:has(:focus-visible) svg { fill: var(--amber-400); }
+.stars a:hover ~ a, .stars a:focus-visible ~ a { color: var(--slate-300); }
+.stars a:hover ~ a svg, .stars a:focus-visible ~ a svg { fill: transparent; }

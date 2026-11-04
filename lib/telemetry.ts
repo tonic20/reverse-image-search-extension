@@ -1,7 +1,7 @@
 /**
  * Pure core for search counting: what we report, and the request that carries it.
  *
- * No browser imports live here on purpose — the same reason review-prompt.ts
+ * No browser imports live here on purpose — the same reason rating.ts
  * has none. This module is unit-tested under vitest/happy-dom, which has no WXT
  * browser mock; all browser I/O lives in ./telemetry-actions.ts.
  *

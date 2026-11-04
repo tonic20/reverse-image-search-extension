@@ -47,12 +47,9 @@ ethics_body1_html: La recherche de visage est puissante. Utilise-la pour <b>retr
 ethics_body2_html: Ne l’utilise <b>pas</b> pour traquer, harceler ou identifier des personnes sans motif légitime. Tu es responsable du respect des lois locales.
 i_understand: J’ai compris
 
-# Review prompt (popup)
-review_prompt_title: Vous aimez Reverse Image Search Anywhere ?
-review_prompt_body: Votre avis aide d’autres personnes à le découvrir.
-review_prompt_review: Laisser un avis
-review_prompt_later: Plus tard
-review_prompt_feedback: Envoyer un commentaire
+# Rate us (popup)
+rate_us: Notez-nous
+rate_stars: "$1 sur 5 étoiles"
 popup_count_searches: Autoriser les statistiques de recherche anonymes
 popup_site_cta: Rechercher sur le web
 popup_site_link: reverseimage.app

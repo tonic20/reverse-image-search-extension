@@ -2,7 +2,7 @@ import { browser } from 'wxt/browser';
 import { ENGINES } from './engines';
 import { getSettings } from './settings';
 import { API_BASE } from './config';
-import { recordSuccessfulSearch } from './review-prompt-actions';
+import { recordSuccessfulSearch } from './rating-actions';
 import { uploadHeaders } from './telemetry-actions';
 import type { SearchAction } from './telemetry';
 

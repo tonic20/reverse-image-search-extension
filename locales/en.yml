@@ -47,12 +47,9 @@ ethics_body1_html: Face search is powerful. Use it to <b>reunite sources, verify
 ethics_body2_html: Do <b>not</b> use it to stalk, harass, or identify people without a legitimate reason. You are responsible for complying with your local laws.
 i_understand: I understand
 
-# Review prompt (popup) — compliant CWS review ask, shown after 3 successful searches
-review_prompt_title: Enjoying Reverse Image Search Anywhere?
-review_prompt_body: Your feedback helps more people find it.
-review_prompt_review: Leave a review
-review_prompt_later: Not now
-review_prompt_feedback: Send feedback instead
+# Rate us (popup foot): 4–5 stars open the store reviews, 1–3 the feedback form; after 3 successful searches
+rate_us: Rate us
+rate_stars: "$1 of 5 stars"
 
 # Usage counting (popup) — plain wording: what is sent is a label, not an image
 popup_count_searches: Allow anonymous search statistics

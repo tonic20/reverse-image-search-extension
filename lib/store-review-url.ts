@@ -1,10 +1,10 @@
 /**
- * Where "Leave a review" should send the user, per store.
+ * Where 4 and 5 "Rate us" stars (./rating.ts) send the user, per store.
  *
  * Every store has its own listing and its own review page, and the id/slug is
  * assigned when the listing is created — so a URL only exists once we've
  * actually published there. Anything not listed here resolves to `null`, which
- * suppresses the review prompt entirely rather than sending someone to a store
+ * hides the stars entirely rather than sending someone to a store
  * they didn't install from. (Before this existed, the Chrome Web Store URL was
  * hardcoded, so a Firefox user clicking through landed on a CWS listing they
  * could not review.)
@@ -40,7 +40,7 @@ export function reviewUrlFor(browser: string | undefined): string | null {
 }
 
 /**
- * Resolved for this build. `null` => never show the review prompt.
+ * Resolved for this build. `null` => never show the stars.
  *
  * Written as an explicit build-flag ternary rather than
  * `reviewUrlFor(import.meta.env.BROWSER)`. That map lookup is a *runtime*

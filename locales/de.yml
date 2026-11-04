@@ -47,12 +47,9 @@ ethics_body1_html: Die Gesichtersuche ist sehr leistungsfähig. Nutzen Sie sie, 
 ethics_body2_html: Verwenden Sie sie <b>nicht</b>, um Personen zu stalken, zu belästigen oder ohne legitimen Grund zu identifizieren. Sie sind dafür verantwortlich, die örtlichen Gesetze einzuhalten.
 i_understand: Verstanden
 
-# Review prompt (popup)
-review_prompt_title: Gefällt dir Reverse Image Search Anywhere?
-review_prompt_body: Dein Feedback hilft anderen, es zu finden.
-review_prompt_review: Bewertung schreiben
-review_prompt_later: Nicht jetzt
-review_prompt_feedback: Feedback senden
+# Rate us (popup)
+rate_us: Bewerte uns
+rate_stars: "$1 von 5 Sternen"
 popup_count_searches: Anonyme Suchstatistiken erlauben
 popup_site_cta: Im Web suchen
 popup_site_link: reverseimage.app

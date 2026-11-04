@@ -5,8 +5,8 @@ import { getSettings, setSettings } from '../../lib/settings';
 import { browserOwnsDataConsent } from '../../lib/telemetry-actions';
 import { MSG } from '../../lib/messages';
 import { localizeDom } from '../../lib/dom-i18n';
-import { shouldPrompt } from '../../lib/review-prompt';
-import { getState, markPromptShown, onReview, onFeedback, onLater } from '../../lib/review-prompt-actions';
+import { FEEDBACK_URL, RatingLinks, rateTarget, shouldAsk } from '../../lib/rating';
+import { getRating, onRate } from '../../lib/rating-actions';
 import { STORE_REVIEW_URL } from '../../lib/store-review-url';
 
 const ENGINE_NOTE_KEY = {
@@ -124,26 +124,34 @@ function fileToDataUrl(file: Blob): Promise<string> {
   });
 }
 
-async function maybeShowReviewPrompt() {
-  const state = await getState();
-  if (!shouldPrompt(state, Date.now(), STORE_REVIEW_URL !== null)) return;
-  // Stamp on render: closing the popup without choosing also defers 90 days.
-  await markPromptShown(Date.now());
+// An outlined star; CSS fills it up to the one pointed at.
+const STAR_SVG =
+  '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3.5l2.6 5.3 5.9.9-4.25 4.1 1 5.85L12 16.9l-5.25 2.75 1-5.85L3.5 9.7l5.9-.9z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>';
 
-  const card = document.getElementById('review-prompt')!;
-  card.hidden = false;
-  document.getElementById('rp-review')!.addEventListener('click', async () => {
-    await onReview();
-    card.hidden = true;
-  });
-  document.getElementById('rp-feedback')!.addEventListener('click', async () => {
-    await onFeedback();
-    card.hidden = true;
-  });
-  document.getElementById('rp-later')!.addEventListener('click', () => {
-    onLater();
-    card.hidden = true;
-  });
+/** Rate us (lib/rating.ts): decided once on open, so the popup never changes height mid-read. */
+async function maybeShowRating() {
+  const links: RatingLinks = { reviews: STORE_REVIEW_URL, feedback: FEEDBACK_URL };
+  if (!shouldAsk(await getRating(), links)) return;
+
+  const row = document.getElementById('rate')!;
+  const stars = document.getElementById('stars')!;
+  for (let n = 1; n <= 5; n++) {
+    const a = document.createElement('a');
+    a.href = rateTarget(n, links);
+    a.target = '_blank';
+    a.rel = 'noopener';
+    a.setAttribute('aria-label', i18n.t('rate_stars', [String(n)]));
+    a.innerHTML = STAR_SVG;
+    // Not the link's own navigation: onRate saves the stars before the new tab
+    // takes focus and the popup closes.
+    a.addEventListener('click', (e) => {
+      e.preventDefault();
+      row.hidden = true;
+      void onRate(n, a.href);
+    });
+    stars.append(a);
+  }
+  row.hidden = false;
 }
 
 document.getElementById('capture')!.addEventListener('click', startCapture);
@@ -157,4 +165,4 @@ localizeDom(document, (key) =>
     : i18n.t(key as Parameters<typeof i18n.t>[0]),
 );
 renderEngines();
-void maybeShowReviewPrompt();
+void maybeShowRating();

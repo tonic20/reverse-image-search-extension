@@ -47,12 +47,9 @@ ethics_body1_html: Поиск по лицу — мощный инструмен�
 ethics_body2_html: <b>Не</b> используйте его для слежки, преследования или установления личности людей без законных оснований. Вы несёте ответственность за соблюдение местных законов.
 i_understand: Понятно
 
-# Review prompt (popup)
-review_prompt_title: Нравится Reverse Image Search Anywhere?
-review_prompt_body: Ваш отзыв поможет другим найти расширение.
-review_prompt_review: Оставить отзыв
-review_prompt_later: Не сейчас
-review_prompt_feedback: Написать нам
+# Rate us (popup)
+rate_us: Оцените нас
+rate_stars: "$1 из 5 звёзд"
 popup_count_searches: Разрешить анонимную статистику поиска
 popup_site_cta: Искать в интернете
 popup_site_link: reverseimage.app

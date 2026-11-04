@@ -17,7 +17,7 @@ import { parse } from 'yaml';
 const LOCALES_DIR = fileURLToPath(new URL('../locales/', import.meta.url));
 const REQUIRED_MANIFEST_KEYS = ['extName', 'extDescription'];
 // Keys carrying a positional substitution; arity must match across locales.
-const SUBSTITUTION_ARITY: Record<string, number> = { status_reload: 1, popup_hint_html: 1 };
+const SUBSTITUTION_ARITY: Record<string, number> = { status_reload: 1, popup_hint_html: 1, rate_stars: 1 };
 // Locales with the whole UI translated. Every other locale carries only the store name and
 // short description (the manifest keys); Chrome falls back to en for the rest of the UI.
 const UI_LOCALES = ['es', 'pt_BR', 'fr', 'de', 'ru', 'ja'];
